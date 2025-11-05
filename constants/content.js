@@ -5,9 +5,20 @@ export const CLUB_INFO = {
   name: "Smithtown Hawks",
   tagline: "Building Character Through Competition",
   description:
-    "The Smithtown Hawks are a competitive U13 boys travel soccer team playing in the LIJSL. We focus on player development, teamwork, and building resilient young athletes on and off the field.",
+    "The Smithtown Hawks are a competitive U13 boys travel soccer team competing in the LIJSL. We focus on development, teamwork, and leadership — helping young players grow on and off the field.",
   email: "hawks@smithtownsoccer.com",
-  coach: "Coach Ryan Hofman",
+  leadership: [
+    {
+      name: "Ryan Hofman",
+      title: "Founder & Head Coach",
+      bio: "Ryan founded the Smithtown Hawks with a player-first vision — blending structure, creativity, and accountability to develop resilient athletes. Under his leadership, the Hawks have earned multiple promotions and built a strong, family-like culture.",
+    },
+    {
+      name: "Carlo",
+      title: "Coach & Head of Training",
+      bio: "Carlo oversees the technical and tactical training curriculum, ensuring each player progresses in skill, discipline, and understanding of the game. His attention to detail and passion for player development are central to the Hawks’ success.",
+    },
+  ],
 };
 
 // Hero Section
@@ -17,11 +28,11 @@ export const HERO_CONTENT = {
     "We’re more than a team — we’re a family. The Hawks compete with passion, discipline, and purpose, representing Smithtown with pride.",
   cta: {
     primary: "View Schedule",
-    secondary: "Meet the Team",
+    secondary: "Meet the Coaches",
   },
 };
 
-// Team Pillars / Features
+// Team Pillars / Core Values
 export const TEAM_PILLARS = [
   {
     icon: "trophy",
@@ -33,19 +44,19 @@ export const TEAM_PILLARS = [
     icon: "users",
     title: "Player Development",
     description:
-      "Focused training sessions designed to improve technical ability, tactical understanding, and overall soccer IQ.",
+      "Focused training sessions designed to improve technical ability, tactical awareness, and overall soccer IQ.",
   },
   {
     icon: "activity",
     title: "Fitness & Discipline",
     description:
-      "Building strong, conditioned athletes who take care of their bodies and bring full effort every practice and game.",
+      "Building strong, conditioned athletes who bring focus and effort to every practice and game.",
   },
   {
     icon: "target",
     title: "Team Culture",
     description:
-      "Our culture is built on accountability, hard work, and trust. Every Hawk plays a role, and every player matters.",
+      "Our culture is built on accountability, effort, and trust. Every Hawk plays a role, and every player matters.",
   },
 ];
 
@@ -72,7 +83,7 @@ export const TEAM_HISTORY = {
 export const COACHING_PHILOSOPHY = {
   headline: "A Player-First Approach",
   description:
-    "Our mission is to teach young players to think, adapt, and lead — on the field and beyond. Every training session focuses on effort, creativity, and decision-making. Winning is important, but growth comes first.",
+    "Our mission is to teach young players to think, adapt, and lead — on the field and beyond. Every training session emphasizes creativity, effort, and accountability. Winning matters, but growth always comes first.",
   values: [
     "Effort and Accountability",
     "Creativity and Confidence",
@@ -81,7 +92,7 @@ export const COACHING_PHILOSOPHY = {
   ],
 };
 
-// Practice and Game Info
+// Schedule Information
 export const SCHEDULE_INFO = {
   practice: [
     { day: "Tuesday", time: "6:00–7:30 PM", location: "Moriches Field" },

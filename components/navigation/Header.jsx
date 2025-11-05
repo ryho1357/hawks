@@ -55,7 +55,7 @@ export default function Header() {
             transform: [{ scale: 4 }] // Scale the entire view by 125%
           }}>
         <Image
-          source={require('../../assets/images/logo/cookeyllc.png')}
+          source={require('../../assets/images/logo/hawks.png')}
           style={{
             width: 62.5, // Scaled width by 125%
             height: 42.5, // Scaled height by 125%
