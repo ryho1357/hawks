@@ -8,7 +8,7 @@ import { MotiView, MotiText } from 'moti';
 import { COLORS, SPACING, SHADOWS } from '../constants/design-system';
 import { HERO_CONTENT } from '../constants/content';
 import { getResponsiveValue, isDesktop } from '../utils/responsive';
-import AIBackground from '../components/backgrounds/AIBackground';
+
 
 const { width, height } = Dimensions.get('window');
 
@@ -172,7 +172,7 @@ export default function Hero() {
   const heroHeight = getResponsiveValue(height * 0.8, height * 0.7, height * 0.9);
 
   return (
-    <AIBackground variant="pitch">
+
       <View style={{
         minHeight: heroHeight,
         justifyContent: 'center',
@@ -293,6 +293,6 @@ export default function Hero() {
           </MotiView>
         </View>
       </View>
-    </AIBackground>
+
   );
 }
