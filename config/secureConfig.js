@@ -4,12 +4,12 @@ import { Platform } from 'react-native';
 
 // Keys for storing environment variables securely
 const ENV_KEYS = {
-  APPWRITE_PROJECT_ID: '6877ef7d000f2930161e',
-  APPWRITE_DATABASE_ID: '6877ef8f0026cff07256', 
-  APPWRITE_COLLECTION_ID: '687823660026480fa75b',
+  APPWRITE_PROJECT_ID: 'x',
+  APPWRITE_DATABASE_ID: 'x', 
+  APPWRITE_COLLECTION_ID: 'x',
   APPWRITE_ENDPOINT: 'https://nyc.cloud.appwrite.io/v1',
-  AWS_USERNAME: 'AKIAVFIWI2UUOG3XRTHM',
-  AWS_SECRET:'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'
+  AWS_USERNAME: 'x',
+  AWS_SECRET:'x'
 };
 
 class SecureConfigService {
