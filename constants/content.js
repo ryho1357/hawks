@@ -4,6 +4,7 @@
 export const CLUB_INFO = {
   name: "Smithtown Hawks",
   tagline: "Building Character Through Competition",
+  founded: "2022",
   description:
     "The Smithtown Hawks are a competitive U13 boys travel soccer team competing in the LIJSL. We focus on development, teamwork, and leadership — helping young players grow on and off the field.",
   email: "hawks@smithtownsoccer.com",
@@ -16,7 +17,7 @@ export const CLUB_INFO = {
     {
       name: "Carlo",
       title: "Coach & Head of Training",
-      bio: "Carlo oversees the technical and tactical training curriculum, ensuring each player progresses in skill, discipline, and understanding of the game. His attention to detail and passion for player development are central to the Hawks’ success.",
+      bio: "Carlo oversees the technical and tactical training curriculum, ensuring each player progresses in skill, discipline, and understanding of the game. His attention to detail and passion for player development are central to the Hawks' success.",
     },
   ],
 };
@@ -25,7 +26,7 @@ export const CLUB_INFO = {
 export const HERO_CONTENT = {
   headline: "Heart. Effort. Teamwork.",
   subheadline:
-    "We’re more than a team — we’re a family. The Hawks compete with passion, discipline, and purpose, representing Smithtown with pride.",
+    "Hawks compete with passion, discipline, and purpose.",
   cta: {
     primary: "View Schedule",
     secondary: "Meet the Coaches",
@@ -114,16 +115,23 @@ export const TEAM_STATS = {
   streak: "3-game unbeaten run",
 };
 
-// Footer Links
-export const FOOTER_LINKS = {
-  team: [
-    { name: "About the Hawks", href: "/about" },
-    { name: "Team History", href: "/history" },
-    { name: "Schedule", href: "/schedule" },
-  ],
-  contact: [
-    { name: "Contact Coach Ryan", email: "hawks@smithtownsoccer.com" },
-    { name: "Join the Team", href: "/join" },
-    { name: "Smithtown Kickers Club", href: "https://www.smithtownkickers.com" },
-  ],
-};
+// Team Roster
+export const TEAM_ROSTER = [
+  { name: "Julian Carazo" },
+  { name: "Lucas Cianci" },
+  { name: "Nathaniel Donlon" },
+  { name: "Jake Ferraro" },
+  { name: "Anthony Fil" },
+  { name: "Patrick Gillen" },
+  { name: "Matthew Habek" },
+  { name: "John Haloulakos" },
+  { name: "Benjamin Haloulakos" },
+  { name: "Derek Hofman" },
+  { name: "Paul Lomonaco" },
+  { name: "Samuel Marin" },
+  { name: "Lucas Marvin" },
+  { name: "Cole Nordin" },
+  { name: "Nitish Prithivi" },
+  { name: "Storm Stier" },
+  { name: "Robert Sullivan" },
+];

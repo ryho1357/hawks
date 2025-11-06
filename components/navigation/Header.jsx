@@ -1,34 +1,37 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Dimensions, Image } from 'react-native';
+import { View, Text, TouchableOpacity, Image } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useRouter, usePathname } from 'expo-router';
-import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter, usePathname, useLocalSearchParams } from 'expo-router';
 import { COLORS, SHADOWS, SPACING } from '../../constants/design-system';
 import { NAVIGATION_ITEMS } from '../../constants/navigation';
 import { isDesktop, isMobile } from '../../utils/responsive';
 import Container from '../ui/Container';
-import ElevenLabsWidget from '../ui/ElevenLabsWidget';
 
-const { width } = Dimensions.get('window');
+const navigateToSlug = (router, slug) => {
+  if (slug === 'home') {
+    router.replace('/');
+    return;
+  }
+
+  router.replace({ pathname: '/', params: { page: slug } });
+};
 
 export default function Header() {
   const router = useRouter();
   const pathname = usePathname();
+  const { page } = useLocalSearchParams();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const handleNavigation = (href) => {
-    if (href === '/') {
-      router.push('/');
-    } else {
-      router.push(href);
-    }
+  const activeSlug = pathname === '/' ? (Array.isArray(page) ? page[0] : page) || 'home' : null;
+
+  const handleNavigation = (slug) => {
+    navigateToSlug(router, slug);
     setMobileMenuOpen(false);
   };
 
-  const isActive = (href) => {
-    if (href === '/' && pathname === '/') return true;
-    if (href !== '/' && pathname === href) return true;
-    return false;
+  const isActive = (slug) => {
+    if (pathname !== '/') return false;
+    return (activeSlug || 'home') === slug;
   };
 
   return (
@@ -38,61 +41,42 @@ export default function Header() {
       borderBottomColor: COLORS.background.tertiary,
       ...SHADOWS.small
     }}>
-      
       <Container>
         <View style={{
           flexDirection: 'row',
-          justifyContent: 'space-between',
+          justifyContent: 'center',
           alignItems: 'center',
           paddingVertical: SPACING.md,
           minHeight: 60
         }}>
-          {/* Logo */}
-          <View style={{ 
-            flexDirection: 'row', 
-            alignItems: 'center',
-            backgroundColor: 'transparent',
-            transform: [{ scale: 4 }] // Scale the entire view by 125%
-          }}>
-        <Image
-          source={require('../../assets/images/logo/hawks.png')}
-          style={{
-            width: 62.5, // Scaled width by 125%
-            height: 42.5, // Scaled height by 125%
-            borderRadius: 50, // Scaled border radius proportionally
-            marginTop: 2, // Adjusted to center the logo vertically
-            marginLeft: 30 // Adjusted to center the logo horizontally
-          }}
-          resizeMode="contain"
-        />
-      </View>
+
           {/* Desktop Navigation */}
           {isDesktop() && (
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               {NAVIGATION_ITEMS.map((item) => (
                 <TouchableOpacity
                   key={item.name}
-                  onPress={() => handleNavigation(item.href)}
+                  onPress={() => handleNavigation(item.slug)}
                   style={{
                     paddingHorizontal: SPACING.md,
                     paddingVertical: SPACING.sm,
                     marginHorizontal: SPACING.xs,
                     borderRadius: 8,
-                    backgroundColor: isActive(item.href) ? COLORS.primaryLight : 'transparent'
+                    backgroundColor: isActive(item.slug) ? COLORS.primary : 'transparent'
                   }}
                 >
                   <Text style={{
                     fontSize: 16,
-                    fontWeight: isActive(item.href) ? '600' : '500',
-                    color: isActive(item.href) ? COLORS.primary : COLORS.text.secondary
+                    fontWeight: isActive(item.slug) ? '700' : '500',
+                    color: isActive(item.slug) ? COLORS.text.white : COLORS.text.primary
                   }}>
                     {item.name}
                   </Text>
                 </TouchableOpacity>
               ))}
-
             </View>
           )}
+
           {/* Mobile Menu Button */}
           {isMobile() && (
             <TouchableOpacity 
@@ -100,17 +84,18 @@ export default function Header() {
               style={{
                 padding: SPACING.sm,
                 borderRadius: 8,
-                backgroundColor: mobileMenuOpen ? COLORS.primaryLight : 'transparent'
+                backgroundColor: mobileMenuOpen ? COLORS.background.tertiary : 'transparent'
               }}
             >
               <MaterialIcons 
-                name={mobileMenuOpen ? "close" : "menu"} 
+                name={mobileMenuOpen ? 'close' : 'menu'} 
                 size={24} 
                 color={COLORS.primary} 
               />
             </TouchableOpacity>
           )}
         </View>
+
         {/* Mobile Menu */}
         {isMobile() && mobileMenuOpen && (
           <View style={{
@@ -122,7 +107,7 @@ export default function Header() {
             {NAVIGATION_ITEMS.map((item) => (
               <TouchableOpacity
                 key={item.name}
-                onPress={() => handleNavigation(item.href)}
+                onPress={() => handleNavigation(item.slug)}
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
@@ -130,19 +115,19 @@ export default function Header() {
                   paddingHorizontal: SPACING.sm,
                   borderRadius: 8,
                   marginVertical: 2,
-                  backgroundColor: isActive(item.href) ? COLORS.primaryLight : 'transparent'
+                  backgroundColor: isActive(item.slug) ? COLORS.primary : 'transparent'
                 }}
               >
                 <MaterialIcons 
                   name={item.icon} 
                   size={20} 
-                  color={isActive(item.href) ? COLORS.primary : COLORS.text.light}
+                  color={isActive(item.slug) ? COLORS.text.white : COLORS.text.secondary}
                   style={{ marginRight: SPACING.sm }}
                 />
                 <Text style={{
                   fontSize: 16,
-                  fontWeight: isActive(item.href) ? '600' : '500',
-                  color: isActive(item.href) ? COLORS.primary : COLORS.text.secondary
+                  fontWeight: isActive(item.slug) ? '700' : '500',
+                  color: isActive(item.slug) ? COLORS.text.white : COLORS.text.primary
                 }}>
                   {item.name}
                 </Text>
@@ -151,7 +136,6 @@ export default function Header() {
           </View>
         )}
       </Container>
-
     </View>
   );
 }

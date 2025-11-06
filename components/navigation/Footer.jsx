@@ -4,167 +4,177 @@ import { View, Text, TouchableOpacity, Linking } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { COLORS, SPACING } from '../../constants/design-system';
-import { COMPANY_INFO } from '../../constants/content';
-import { getResponsiveValue, isDesktop } from '../../utils/responsive';
+import { CLUB_INFO } from '../../constants/content';
+import { FOOTER_LINKS } from '../../constants/navigation';
+import { isDesktop } from '../../utils/responsive';
 import Container from '../ui/Container';
+
+const navigateToSlug = (router, slug) => {
+  if (slug === 'home') {
+    router.replace('/');
+  } else {
+    router.replace({ pathname: '/', params: { page: slug } });
+  }
+};
+
+const LinkGroup = ({ title, links }) => {
+  const router = useRouter();
+
+  return (
+    <View style={{ marginBottom: SPACING.md }}>
+      <Text
+        style={{
+          fontSize: 14,
+          fontWeight: '600',
+          color: COLORS.text.white,
+          marginBottom: SPACING.xs,
+          textTransform: 'uppercase',
+          letterSpacing: 0.5,
+        }}
+      >
+        {title}
+      </Text>
+      {links.map((link) => (
+        <TouchableOpacity
+          key={link.name}
+          onPress={() => navigateToSlug(router, link.slug)}
+          style={{ paddingVertical: 4 }}
+        >
+          <Text
+            style={{
+              fontSize: 14,
+              color: COLORS.text.light,
+            }}
+          >
+            {link.name}
+          </Text>
+        </TouchableOpacity>
+      ))}
+    </View>
+  );
+};
 
 export default function Footer() {
   const router = useRouter();
 
-  const handleEmailPress = (email) => {
-    Linking.openURL(`mailto:${email}`);
+  const handleEmailPress = () => {
+    Linking.openURL(`mailto:${CLUB_INFO.email}`);
   };
 
   return (
-    <View style={{
-      backgroundColor: COLORS.text.primary,
-      paddingVertical: SPACING.lg, // Much smaller padding
-      borderTopWidth: 1,
-      borderTopColor: COLORS.text.secondary
-    }}>
+    <View
+      style={{
+        backgroundColor: COLORS.text.primary,
+        paddingVertical: SPACING.xl,
+        borderTopWidth: 1,
+        borderTopColor: COLORS.text.secondary,
+      }}
+    >
       <Container>
-        {/* Single Row Layout */}
-        <View style={{
-          flexDirection: isDesktop() ? 'row' : 'column',
-          justifyContent: 'space-between',
-          alignItems: isDesktop() ? 'center' : 'flex-start',
-          gap: SPACING.sm
-        }}>
-          {/* Company Info - Compact */}
-          <View style={{
-            flex: isDesktop() ? 1 : undefined,
-            marginBottom: isDesktop() ? 0 : SPACING.sm
-          }}>
-            <Text style={{
-              fontSize: 16,
-              fontWeight: 'bold',
-              color: COLORS.primary,
-              marginBottom: 4
-            }}>
-              {COMPANY_INFO.name}
+        <View
+          style={{
+            flexDirection: isDesktop() ? 'row' : 'column',
+            justifyContent: 'space-between',
+            gap: SPACING.xl,
+          }}
+        >
+          <View style={{ flex: 1 }}>
+            <Text
+              style={{
+                fontSize: 18,
+                fontWeight: '700',
+                color: COLORS.primary,
+                marginBottom: SPACING.xs,
+              }}
+            >
+              {CLUB_INFO.name}
             </Text>
-            
-            <View style={{
-              flexDirection: 'row',
-              alignItems: 'center'
-            }}>
-              <MaterialIcons 
-                name="verified" 
-                size={12} 
-                color={COLORS.status.completed}
-                style={{ marginRight: 4 }}
-              />
-              <Text style={{
-                fontSize: 12,
-                color: COLORS.text.light
-              }}>
-                {COMPANY_INFO.patent}
-              </Text>
-            </View>
-          </View>
-
-          {/* Quick Links - Horizontal */}
-          {isDesktop() && (
-            <View style={{
-              flexDirection: 'row',
-              gap: SPACING.lg,
-              flex: 1,
-              justifyContent: 'center'
-            }}>
-              {[
-                 { name: "Home", href: "/" },
-                 { name: "About", href: "/about" },
-                { name: "Solutions", href: "/solutions" },
-                { name: "Portfolio", href: "/portfolio" },
-                
-                
-              ].map((link) => (
-                <TouchableOpacity
-                  key={link.name}
-                  onPress={() => router.push(link.href)}
-                >
-                  <Text style={{
-                    fontSize: 14,
-                    color: COLORS.text.light,
-                    fontWeight: '400'
-                  }}>
-                    {link.name}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          )}
-
-          {/* Contact & Copyright */}
-          <View style={{
-            flex: isDesktop() ? 1 : undefined,
-            alignItems: isDesktop() ? 'flex-end' : 'flex-start'
-          }}>
+            <Text
+              style={{
+                fontSize: 14,
+                color: COLORS.text.light,
+                marginBottom: SPACING.md,
+              }}
+            >
+              {CLUB_INFO.tagline}
+            </Text>
             <TouchableOpacity
-              onPress={() => handleEmailPress('contact@cookey.ai')}
+              onPress={handleEmailPress}
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
-                marginBottom: 4
               }}
             >
-              <MaterialIcons 
-                name="email" 
-                size={14} 
-                color={COLORS.text.light}
-                style={{ marginRight: 4 }}
+              <MaterialIcons
+                name='mail'
+                size={18}
+                color={COLORS.primary}
+                style={{ marginRight: SPACING.xs }}
               />
-              <Text style={{
-                fontSize: 14,
-                color: COLORS.primary,
-                fontWeight: '500'
-              }}>
-                contact@cookey.ai
+              <Text
+                style={{
+                  fontSize: 14,
+                  color: COLORS.text.white,
+                  fontWeight: '600',
+                }}
+              >
+                {CLUB_INFO.email}
               </Text>
             </TouchableOpacity>
-            
-            <Text style={{
-              fontSize: 12,
-              color: COLORS.text.light
-            }}>
-              © 2025 {COMPANY_INFO.name}
+          </View>
+
+          <View
+            style={{
+              flexDirection: 'row',
+              gap: SPACING.xl,
+              flex: 1,
+              justifyContent: isDesktop() ? 'center' : 'flex-start',
+            }}
+          >
+            <LinkGroup title='Explore' links={[{ name: 'Home', slug: 'home' }, ...FOOTER_LINKS.club]} />
+            <LinkGroup title='Resources' links={FOOTER_LINKS.resources} />
+          </View>
+
+          <View
+            style={{
+              flex: 1,
+              alignItems: isDesktop() ? 'flex-end' : 'flex-start',
+              justifyContent: 'flex-end',
+            }}
+          >
+            <TouchableOpacity
+              onPress={() => navigateToSlug(router, 'contact')}
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                marginBottom: SPACING.sm,
+              }}
+            >
+              <MaterialIcons
+                name='chat'
+                size={18}
+                color={COLORS.text.light}
+                style={{ marginRight: SPACING.xs }}
+              />
+              <Text
+                style={{
+                  fontSize: 14,
+                  color: COLORS.text.light,
+                }}
+              >
+                Connect with the Hawks
+              </Text>
+            </TouchableOpacity>
+            <Text
+              style={{
+                fontSize: 12,
+                color: COLORS.text.light,
+              }}
+            >
+              © {new Date().getFullYear()} {CLUB_INFO.name}. All rights reserved.
             </Text>
           </View>
         </View>
-
-        {/* Mobile Links - Only show on mobile */}
-        {!isDesktop() && (
-          <View style={{
-            flexDirection: 'row',
-            justifyContent: 'space-around',
-            marginTop: SPACING.sm,
-            paddingTop: SPACING.sm,
-            borderTopWidth: 1,
-            borderTopColor: COLORS.text.secondary
-          }}>
-            {[
-               { name: "Home", href: "/" },
-               { name: "About", href: "/about" },
-              { name: "Solutions", href: "/solutions" },
-              { name: "Portfolio", href: "/portfolio" },
-              
-              
-            ].map((link) => (
-              <TouchableOpacity
-                key={link.name}
-                onPress={() => router.push(link.href)}
-              >
-                <Text style={{
-                  fontSize: 12,
-                  color: COLORS.text.light,
-                  fontWeight: '400'
-                }}>
-                  {link.name}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        )}
       </Container>
     </View>
   );

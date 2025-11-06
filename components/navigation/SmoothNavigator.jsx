@@ -1,5 +1,5 @@
 // components/navigation/SmoothNavigator.jsx
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import { View, Dimensions, TouchableOpacity, Text } from 'react-native';
 import Animated, {
   useSharedValue,
@@ -7,10 +7,9 @@ import Animated, {
   withTiming,
   useAnimatedStyle,
   interpolate,
-  runOnJS
 } from 'react-native-reanimated';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useRouter, usePathname } from 'expo-router';
+import { useRouter, usePathname, useLocalSearchParams } from 'expo-router';
 import { COLORS, SPACING } from '../../constants/design-system';
 import { NAVIGATION_ITEMS } from '../../constants/navigation';
 
@@ -151,16 +150,28 @@ const ActiveIndicator = ({ activeIndex, itemCount }) => {
 export default function SmoothNavigator() {
   const router = useRouter();
   const pathname = usePathname();
+  const { page } = useLocalSearchParams();
+
+  const activeSlug = pathname === '/' ? (Array.isArray(page) ? page[0] : page) || 'home' : null;
   
   const activeIndex = NAVIGATION_ITEMS.findIndex(item => {
-    if (item.href === '/' && pathname === '/') return true;
-    if (item.href !== '/' && pathname === item.href) return true;
-    return false;
+    const slug = activeSlug || 'home';
+    return pathname === '/' && item.slug === slug;
   });
+  const displayedIndex = activeIndex === -1 ? 0 : activeIndex;
+
+  const navigateToSlug = (slug) => {
+    if ((activeSlug || 'home') === slug) return;
+    
+    if (slug === 'home') {
+      router.replace('/');
+    } else {
+      router.replace({ pathname: '/', params: { page: slug } });
+    }
+  };
   
-  const handleNavigation = (href, index) => {
-    // Add haptic feedback here if needed
-    router.push(href);
+  const handleNavigation = (slug) => {
+    navigateToSlug(slug);
   };
 
   return (
@@ -175,14 +186,14 @@ export default function SmoothNavigator() {
         backdropFilter: 'blur(10px)',
       }}
     >
-      <ActiveIndicator activeIndex={activeIndex} itemCount={NAVIGATION_ITEMS.length} />
+      <ActiveIndicator activeIndex={displayedIndex} itemCount={NAVIGATION_ITEMS.length} />
       
       {NAVIGATION_ITEMS.map((item, index) => (
         <NavigationTab
           key={item.name}
           item={item}
-          isActive={index === activeIndex}
-          onPress={() => handleNavigation(item.href, index)}
+          isActive={index === displayedIndex}
+          onPress={() => handleNavigation(item.slug)}
           index={index}
           totalItems={NAVIGATION_ITEMS.length}
         />

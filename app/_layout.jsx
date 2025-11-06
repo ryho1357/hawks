@@ -3,7 +3,6 @@ import React from 'react';
 import { Stack } from 'expo-router';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { View } from 'react-native';
-import SmoothNavigator from '../components/navigation/SmoothNavigator';
 import Header from '../components/navigation/Header';
 
 export default function RootLayout() {
@@ -25,8 +24,6 @@ export default function RootLayout() {
             </Stack>
           </View>
         </View>
-
-        <SmoothNavigator />
       </View>
     </GestureHandlerRootView>
   );

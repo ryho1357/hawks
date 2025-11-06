@@ -72,6 +72,15 @@ const FloatingOrb = ({ size, duration, delay, colors }) => {
 export default function AIBackground({ children, variant = 'primary' }) {
   const getOrbConfig = () => {
     switch (variant) {
+      case 'pitch':
+        return {
+          orbs: [
+            { size: 140, colors: ['#E31B23', '#FFFFFF'], duration: 6000, delay: 0 },
+            { size: 90, colors: ['#166534', '#22C55E66'], duration: 7000, delay: 1200 },
+            { size: 70, colors: ['#14532D', '#65A30D66'], duration: 6500, delay: 2200 },
+          ],
+          fieldOverlay: true,
+        };
       case 'cyberpunk':
         return {
           orbs: [
@@ -98,7 +107,7 @@ export default function AIBackground({ children, variant = 'primary' }) {
     }
   };
   
-  const { orbs } = getOrbConfig();
+  const { orbs, fieldOverlay } = getOrbConfig();
   
   return (
     <View style={{ flex: 1, overflow: 'hidden' }}>
@@ -112,21 +121,62 @@ export default function AIBackground({ children, variant = 'primary' }) {
           delay={orb.delay}
         />
       ))}
+
       
-      {/* Grid Pattern Overlay */}
-      <View
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          opacity: 0.1,
-          backgroundImage: `linear-gradient(${COLORS.primary} 1px, transparent 1px),
-                           linear-gradient(90deg, ${COLORS.primary} 1px, transparent 1px)`,
-          backgroundSize: '50px 50px',
-        }}
-      />
+      {/* Soccer Pitch Overlay */}
+      {fieldOverlay && (
+        <>
+          <LinearGradient
+            colors={['transparent', 'rgba(34, 197, 94, 0.15)', 'rgba(22, 101, 52, 0.85)']}
+            style={{
+              position: 'absolute',
+              left: 0,
+              right: 0,
+              bottom: 0,
+              height: height ,
+            }}
+          />
+          <View
+            style={{
+              position: 'absolute',
+              left: 0,
+              right: 0,
+              bottom: 0,
+              height: height * 0.4,
+              borderTopWidth: 2,
+              borderColor: 'rgba(255,255,255,0.35)',
+            }}
+          >
+            {/* Center Circle */}
+            <View
+              style={{
+                position: 'absolute',
+                top: height * 0.12,
+                left: '50%',
+                width: 140,
+                height: 140,
+                marginLeft: -70,
+                borderRadius: 70,
+                borderWidth: 2,
+                borderColor: 'rgba(255,255,255,0.25)',
+              }}
+            />
+            {/* Midfield Line */}
+            <View
+              style={{
+                position: 'absolute',
+                top: height * 0.12 + 70,
+                left: 0,
+                right: 0,
+                height: 2,
+                backgroundColor: 'rgba(255,255,255,0.25)',
+              }}
+            />
+
+
+          </View>
+        </>
+      )}
       
       {/* Content */}
       {children}

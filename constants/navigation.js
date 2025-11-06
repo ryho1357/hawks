@@ -1,21 +1,26 @@
 export const NAVIGATION_ITEMS = [
-    { name: "Home", href: "/", icon: "home" },
-    { name: "About", href: "/about", icon: "info" },
-    { name: "Solutions", href: "/solutions", icon: "build" },
-    { name: "Portfolio", href: "/portfolio", icon: "work" },
-    { name: "Contact", href: "/contact", icon: "mail" }
-  ];
-  
-  export const FOOTER_LINKS = {
-    company: [
-      { name: "About", href: "/about" },
-      { name: "Solutions", href: "/solutions" },
-      { name: "Portfolio", href: "/portfolio" }
+  { name: 'Home', slug: 'home', icon: 'home' },
+  { name: 'About', slug: 'about', icon: 'info' },
+  { name: 'Team', slug: 'team', icon: 'group' },
+  { name: 'Contact', slug: 'contact', icon: 'mail' },
+];
 
-    ],
-    contact: [
-      { name: "Business Inquiries", email: "business@cookey.ai" },
-      { name: "General Contact", email: "contact@cookey.ai" },
-      { name: "Support", email: "support@cookey.ai" }
-    ]
-  };
+export const FOOTER_LINKS = {
+  club: [
+    { name: 'About the Hawks', slug: 'about' },
+    { name: 'Team Roster', slug: 'team' },
+    { name: 'Contact', slug: 'contact' },
+  ],
+  resources: [
+    { name: 'Practice Schedule', slug: 'team' },
+    { name: 'Match Updates', slug: 'home' },
+  ],
+};
+
+export const slugToParams = (slug) => {
+  if (!slug || slug === 'home') {
+    return null;
+  }
+
+  return { page: slug };
+};

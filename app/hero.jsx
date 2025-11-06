@@ -1,57 +1,18 @@
 // app/hero.jsx - Enhanced version
-import React, { useEffect } from 'react';
-import { View, Text, TouchableOpacity, Dimensions } from 'react-native';
+import React from 'react';
+import { View, Text, TouchableOpacity, Dimensions, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { 
-  Easing
-} from 'react-native-reanimated';
 import { MotiView, MotiText } from 'moti';
 import { COLORS, SPACING, SHADOWS } from '../constants/design-system';
 import { HERO_CONTENT } from '../constants/content';
 import { getResponsiveValue, isDesktop } from '../utils/responsive';
-import Button from '../components/ui/Button';
 import AIBackground from '../components/backgrounds/AIBackground';
 
 const { width, height } = Dimensions.get('window');
 
-const AnimatedIcon = ({ name, size, color, delay = 0 }) => {
-  return (
-    <MotiView
-      from={{
-        opacity: 0,
-        scale: 0,
-        rotate: '0deg',
-      }}
-      animate={{
-        opacity: 1,
-        scale: 1,
-        rotate: '360deg',
-      }}
-      transition={{
-        delay: delay,
-        duration: 1000,
-        rotate: {
-          repeat: Infinity,
-          duration: 10000,
-          easing: Easing.linear,
-        },
-        scale: {
-          type: 'spring',
-          damping: 15,
-        }
-      }}
-      style={{
-        position: 'absolute',
-      }}
-    >
-      <MaterialIcons name={name} size={size} color={color} />
-    </MotiView>
-  );
-};
-
-const TypewriterText = ({ text, delay = 0 }) => {
+const TypewriterText = ({ text, delay = 0, style }) => {
   return (
     <MotiText
       from={{ opacity: 0 }}
@@ -61,13 +22,16 @@ const TypewriterText = ({ text, delay = 0 }) => {
         duration: 2000,
         type: 'timing',
       }}
-      style={{
-        fontSize: getResponsiveValue(28, 36, 48),
-        fontWeight: 'bold',
-        color: COLORS.text.primary,
-        textAlign: 'center',
-        lineHeight: getResponsiveValue(28, 36, 48) * 1.2
-      }}
+      style={[
+        {
+          fontSize: getResponsiveValue(28, 36, 48),
+          fontWeight: 'bold',
+          color: COLORS.text.primary,
+          textAlign: 'center',
+          lineHeight: getResponsiveValue(28, 36, 48) * 1.2
+        },
+        style
+      ]}
     >
       {text}
     </MotiText>
@@ -130,12 +94,85 @@ const FloatingButton = ({ title, onPress, variant, delay = 0 }) => {
   );
 };
 
+const SoccerBallCluster = () => {
+  const balls = [
+    { size: 54, translateX: -10, translateY: -10, delay: 0, opacity: 0.35 },
+    { size: 40, translateX: 32, translateY: -6, delay: 300, opacity: 0.4 },
+    { size: 32, translateX: 4, translateY: 28, delay: 600, opacity: 0.5 },
+  ];
+
+  return (
+    <View
+      style={{
+        position: 'absolute',
+        top: 40,
+        left: 32,
+        width: 160,
+        height: 160,
+      }}
+    >
+      {balls.map((ball, index) => (
+        <MotiView
+          key={index}
+          from={{
+            opacity: 0,
+            scale: 0.85,
+            translateX: ball.translateX - 12,
+            translateY: ball.translateY - 12,
+            rotate: '0deg',
+          }}
+          animate={{
+            opacity: ball.opacity,
+            scale: 1.05,
+            translateX: ball.translateX + 8,
+            translateY: ball.translateY + 8,
+            rotate: '360deg',
+          }}
+          transition={{
+            type: 'timing',
+            duration: 4500,
+            loop: true,
+            delay: ball.delay,
+          }}
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+          }}
+        >
+          <View
+            style={{
+              width: ball.size,
+              height: ball.size,
+              borderRadius: ball.size / 2,
+              backgroundColor: COLORS.background.main + '10',
+              alignItems: 'center',
+              justifyContent: 'center',
+              ...SHADOWS.small,
+            }}
+          >
+            <MaterialIcons name="sports-soccer" size={ball.size * 0.6} color={COLORS.primary} />
+          </View>
+        </MotiView>
+      ))}
+    </View>
+  );
+};
+
+const navigateToSlug = (router, slug) => {
+  if (slug === 'home') {
+    router.replace('/');
+  } else {
+    router.replace({ pathname: '/', params: { page: slug } });
+  }
+};
+
 export default function Hero() {
   const router = useRouter();
   const heroHeight = getResponsiveValue(height * 0.8, height * 0.7, height * 0.9);
 
   return (
-    <AIBackground variant="ai">
+    <AIBackground variant="pitch">
       <View style={{
         minHeight: heroHeight,
         justifyContent: 'center',
@@ -144,18 +181,8 @@ export default function Hero() {
         paddingVertical: SPACING.xxl,
         position: 'relative'
       }}>
-        {/* Animated Background Icons */}
-        <View style={{ position: 'absolute', top: 80, right: 50 }}>
-          <AnimatedIcon name="psychology" size={60} color={COLORS.primary + '20'} delay={500} />
-        </View>
-        
-        <View style={{ position: 'absolute', top: 200, left: 30 }}>
-          <AnimatedIcon name="memory" size={40} color={COLORS.secondary + '30'} delay={1000} />
-        </View>
-        
-        <View style={{ position: 'absolute', bottom: 150, right: 80 }}>
-          <AnimatedIcon name="settings" size={50} color={COLORS.background.secondary + '25'} delay={1500} />
-        </View>
+        {/* Animated Soccer Ball Cluster */}
+        <SoccerBallCluster />
 
         {/* Main Content */}
         <View style={{
@@ -178,8 +205,67 @@ export default function Hero() {
               type: 'spring',
               damping: 15,
             }}
+            style={{ width: '100%' }}
           >
-            <TypewriterText text={HERO_CONTENT.headline} />
+            <View
+              style={{
+                alignSelf: 'center',
+                position: 'relative',
+                overflow: 'hidden',
+                borderRadius: 28,
+                paddingVertical: SPACING.md,
+                paddingHorizontal: getResponsiveValue(20, 28, 36),
+                maxWidth: isDesktop() ? 720 : '100%',
+                borderWidth: 1,
+                borderColor: 'rgba(255,255,255,0.25)',
+                ...SHADOWS.large,
+              }}
+            >
+              <LinearGradient
+                colors={['rgba(178,34,34,0.95)', 'rgba(127,29,29,0.92)']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={{
+                  ...StyleSheet.absoluteFillObject,
+                }}
+              />
+              <MotiView
+                pointerEvents="none"
+                from={{ opacity: 0.35, scale: 0.95 }}
+                animate={{ opacity: 0.7, scale: 1 }}
+                transition={{
+                  loop: true,
+                  repeatReverse: true,
+                  duration: 2400,
+                  type: 'timing',
+                }}
+                style={{
+                  ...StyleSheet.absoluteFillObject,
+                  borderRadius: 28,
+                  backgroundColor: 'rgba(255,255,255,0.08)',
+                }}
+              />
+              <MaterialIcons
+                name="sports-soccer"
+                size={isDesktop() ? 220 : 180}
+                color="rgba(255,255,255,0.12)"
+                style={{
+                  position: 'absolute',
+                  top: isDesktop() ? -40 : -50,
+                  right: isDesktop() ? -30 : -60,
+                  transform: [{ rotate: '-15deg' }],
+                }}
+              />
+              <TypewriterText
+                text={HERO_CONTENT.headline}
+                style={{
+                  color: COLORS.text.white,
+                  textShadowColor: 'rgba(255, 255, 255, 0.65)',
+                  textShadowOffset: { width: 0, height: 0 },
+                  textShadowRadius: 12,
+                }}
+              />
+            </View>
           </MotiView>
 
           {/* Animated Subtitle */}
@@ -203,118 +289,9 @@ export default function Hero() {
               marginBottom: SPACING.xl,
             }}
           >
-            <Text style={{
-              fontSize: getResponsiveValue(16, 18, 22),
-              color: COLORS.text.secondary,
-              textAlign: 'center',
-              lineHeight: getResponsiveValue(16, 18, 22) * 1.4,
-              maxWidth: isDesktop() ? 700 : '100%'
-            }}>
-              {HERO_CONTENT.subheadline}
-            </Text>
+
           </MotiView>
-
-          {/* Animated CTA Buttons */}
-          <View style={{
-            flexDirection: isDesktop() ? 'row' : 'column',
-            alignItems: 'center',
-            gap: SPACING.md,
-            width: '100%',
-            maxWidth: 500,
-            marginBottom: SPACING.xl
-          }}>
-            <FloatingButton
-              title={HERO_CONTENT.cta.primary}
-              onPress={() => router.push('/portfolio')}
-              delay={1200}
-            />
-            
-            <FloatingButton
-              title={HERO_CONTENT.cta.secondary}
-              onPress={() => router.push('/contact')}
-              variant="secondary"
-              delay={1400}
-            />
-          </View>
-
-        {/* Animated Trust Indicators */}
-        <MotiView
-          from={{
-            opacity: 0,
-            scale: 0.8,
-          }}
-          animate={{
-            opacity: 1,
-            scale: isDesktop() ? 1 : 0.9, // Scale down to 90% on mobile
-          }}
-          transition={{
-            delay: 1600,
-            duration: 800,
-            type: 'spring',
-          }}
-        >
-          <View style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: isDesktop() ? SPACING.lg : SPACING.sm, // Smaller gap on mobile
-          }}>
-            {[
-              { icon: 'verified', text: 'Excellent Rating', color: COLORS.status.completed },
-              { icon: 'star', size: 18, color: COLORS.background.secondary },
-              { icon: 'star', size: 18, color: COLORS.background.secondary },
-              { icon: 'star', size: 18, color: COLORS.background.secondary },
-              { icon: 'star', size: 18, color: COLORS.background.secondary },
-              { icon: 'star', size: 18, color: COLORS.background.secondary },
-            ].map((item, index) => (
-              <MotiView
-                key={index}
-                from={{
-                  opacity: 0,
-                  translateY: 20,
-                }}
-                animate={{
-                  opacity: 1,
-                  translateY: 0,
-                }}
-                transition={{
-                  delay: 1800 + (index * 200),
-                  type: 'spring',
-                  damping: 15,
-                }}
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  backgroundColor: COLORS.background.main + '80',
-                  paddingHorizontal: isDesktop() ? SPACING.md : SPACING.sm, // Smaller padding on mobile
-                  paddingVertical: SPACING.sm,
-                  borderRadius: 20,
-                  backdropFilter: 'blur(10px)',
-                  minWidth: item.text ? undefined : (isDesktop() ? 40 : 36), // Smaller min-width on mobile
-                }}
-              >
-                <MaterialIcons 
-                  name={item.icon} 
-                  size={isDesktop() ? 18 : 16} // Smaller icons on mobile
-                  color={item.color} 
-                />
-                {item.text && (
-                  <Text style={{
-                    marginLeft: SPACING.xs,
-                    fontSize: isDesktop() ? 14 : 12, // Smaller text on mobile
-                    color: COLORS.text.secondary,
-                    fontWeight: '500'
-                  }}>
-                    {item.text}
-                  </Text>
-                )}
-              </MotiView>
-            ))}
-          </View>
-        </MotiView>
         </View>
-
-        
       </View>
     </AIBackground>
   );
