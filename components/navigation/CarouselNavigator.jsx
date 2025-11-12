@@ -1,10 +1,9 @@
 // components/navigation/CarouselNavigator.jsx
 import React, { useRef, useEffect, useState } from 'react';
-import { View, Dimensions, PanGestureHandler, State } from 'react-native';
+import { View, Dimensions, State } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
-  useAnimatedGestureHandler,
   withSpring,
   withTiming,
   runOnJS,
@@ -59,73 +58,34 @@ export default function CarouselNavigator({ children, currentRoute }) {
     }
   };
 
-  const gestureHandler = useAnimatedGestureHandler({
-    onStart: (_, context) => {
-      context.startX = translateX.value;
-    },
-    onActive: (event, context) => {
-      translateX.value = context.startX + event.translationX;
-    },
-    onEnd: (event) => {
-      const velocity = event.velocityX;
-      const dragDistance = event.translationX;
-      
-      // Determine direction and threshold
-      let targetIndex = currentIndex;
-      
-      if (Math.abs(dragDistance) > SCREEN_WIDTH * 0.3 || Math.abs(velocity) > 500) {
-        if (dragDistance > 0 && currentIndex > 0) {
-          targetIndex = currentIndex - 1;
-        } else if (dragDistance < 0 && currentIndex < PAGES.length - 1) {
-          targetIndex = currentIndex + 1;
-        }
-      }
-      
-      // Animate to target position
-      translateX.value = withSpring(-targetIndex * SCREEN_WIDTH, {
-        damping: 20,
-        stiffness: 200,
-        mass: 0.8,
-        velocity: velocity * 0.3
-      });
-      
-      // Navigate if index changed
-      if (targetIndex !== currentIndex) {
-        runOnJS(navigateToPage)(targetIndex);
-      }
-    }
-  });
-
   const containerStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: translateX.value }],
   }));
 
   return (
     <View style={{ flex: 1, overflow: 'hidden' }}>
-      <PanGestureHandler onGestureEvent={gestureHandler}>
-        <Animated.View
-          style={[
-            {
-              flexDirection: 'row',
-              flex: 1,
-              width: SCREEN_WIDTH * PAGES.length,
-            },
-            containerStyle
-          ]}
-        >
-          {PAGES.map((page, index) => (
-            <CarouselPage
-              key={page.route}
-              index={index}
-              currentIndex={currentIndex}
-              translateX={translateX}
-            >
-              {/* Page content will be rendered here */}
-              {children}
-            </CarouselPage>
-          ))}
-        </Animated.View>
-      </PanGestureHandler>
+      <Animated.View
+        style={[
+          {
+            flexDirection: 'row',
+            flex: 1,
+            width: SCREEN_WIDTH * PAGES.length,
+          },
+          containerStyle
+        ]}
+      >
+        {PAGES.map((page, index) => (
+          <CarouselPage
+            key={page.route}
+            index={index}
+            currentIndex={currentIndex}
+            translateX={translateX}
+          >
+            {/* Page content will be rendered here */}
+            {children}
+          </CarouselPage>
+        ))}
+      </Animated.View>
       
       {/* Navigation Dots */}
       <PageIndicator 

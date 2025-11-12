@@ -3,13 +3,11 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, Dimensions, Image, StyleSheet } from 'react-native';
 import Animated, { 
   useSharedValue, 
-  useAnimatedGestureHandler, 
   useAnimatedStyle, 
   withSpring, 
   runOnJS,
   withRepeat,
   withTiming,
-  interpolate
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -257,30 +255,6 @@ export default function CarouselApp() {
       setCurrentIndex(targetIndex);
     }
   }, [page, currentIndex, translateX]);
-
-  const gestureHandler = useAnimatedGestureHandler({
-    onStart: (_, context) => {
-      context.startX = translateX.value;
-    },
-    onActive: (event, context) => {
-      translateX.value = context.startX + event.translationX;
-    },
-    onEnd: (event) => {
-      const dragDistance = event.translationX;
-      let targetIndex = currentIndex;
-      if (Math.abs(dragDistance) > SCREEN_WIDTH * 0.3) {
-        if (dragDistance > 0 && currentIndex > 0) {
-          targetIndex = currentIndex - 1;
-        } else if (dragDistance < 0 && currentIndex < PAGES.length - 1) {
-          targetIndex = currentIndex + 1;
-        }
-      }
-      translateX.value = withSpring(-targetIndex * SCREEN_WIDTH);
-      if (targetIndex !== currentIndex) {
-        runOnJS(handleIndexChange)(targetIndex);
-      }
-    },
-  });
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: translateX.value }],
