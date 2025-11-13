@@ -6,7 +6,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { MotiView, MotiText } from 'moti';
 import { COLORS, SPACING, SHADOWS } from '../constants/design-system';
-import { HERO_CONTENT } from '../constants/content';
+import { HERO_CONTENT, TODAY_INFO } from '../constants/content';
 import { getResponsiveValue, isDesktop } from '../utils/responsive';
 
 
@@ -159,6 +159,126 @@ const SoccerBallCluster = () => {
   );
 };
 
+const TodayDetailRow = ({ icon, label, value }) => (
+  <View
+    style={{
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+      marginBottom: SPACING.md,
+    }}
+  >
+    <View
+      style={{
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        backgroundColor: COLORS.primary + '10',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginRight: SPACING.sm,
+      }}
+    >
+      <MaterialIcons name={icon} size={20} color={COLORS.primary} />
+    </View>
+    <View style={{ flex: 1 }}>
+      <Text
+        style={{
+          fontSize: 13,
+          textTransform: 'uppercase',
+          color: COLORS.text.secondary,
+          fontWeight: '600',
+        }}
+      >
+        {label}
+      </Text>
+      <Text
+        style={{
+          fontSize: 16,
+          fontWeight: '600',
+          color: COLORS.text.primary,
+          lineHeight: 22,
+        }}
+      >
+        {value}
+      </Text>
+    </View>
+  </View>
+);
+
+const TodaySection = () => (
+  <MotiView
+    from={{
+      opacity: 0,
+      translateY: 30,
+    }}
+    animate={{
+      opacity: 1,
+      translateY: 0,
+    }}
+    transition={{
+      delay: 200,
+      type: 'spring',
+      damping: 18,
+    }}
+    style={{ width: '100%' }}
+  >
+    <View
+      style={{
+        width: '100%',
+        backgroundColor: 'rgba(255,255,255,0.95)',
+        borderRadius: 28,
+        padding: SPACING.xl,
+        borderWidth: 1,
+        borderColor: 'rgba(212,175,55,0.45)',
+        ...SHADOWS.large,
+      }}
+    >
+      <Text
+        style={{
+          fontSize: 14,
+          fontWeight: '700',
+          letterSpacing: 2,
+          color: COLORS.primary,
+          marginBottom: SPACING.xs,
+        }}
+      >
+        TODAY
+      </Text>
+      <Text
+        style={{
+          fontSize: 20,
+          fontWeight: '700',
+          color: COLORS.text.primary,
+          marginBottom: SPACING.xs,
+        }}
+      >
+        {TODAY_INFO.dateLabel}
+      </Text>
+      <Text
+        style={{
+          fontSize: 18,
+          fontWeight: '600',
+          color: COLORS.text.secondary,
+          marginBottom: SPACING.lg,
+        }}
+      >
+        {TODAY_INFO.sessionTitle}
+      </Text>
+      <TodayDetailRow icon="schedule" label="Time" value={TODAY_INFO.time} />
+      <TodayDetailRow icon="place" label="Location" value={TODAY_INFO.location} />
+      <Text
+        style={{
+          marginTop: SPACING.sm,
+          color: COLORS.text.secondary,
+          lineHeight: 22,
+        }}
+      >
+        {TODAY_INFO.note}
+      </Text>
+    </View>
+  </MotiView>
+);
+
 const navigateToSlug = (router, slug) => {
   if (slug === 'home') {
     router.replace('/');
@@ -287,9 +407,23 @@ export default function Hero() {
             style={{
               marginTop: SPACING.lg,
               marginBottom: SPACING.xl,
+              width: '100%',
+              alignItems: 'center',
             }}
           >
-
+            <Text
+              style={{
+                color: COLORS.text.white,
+                fontSize: getResponsiveValue(18, 20, 22),
+                textAlign: 'center',
+                fontWeight: '500',
+                marginBottom: SPACING.lg,
+                maxWidth: isDesktop() ? 600 : '100%',
+              }}
+            >
+              {HERO_CONTENT.subheadline}
+            </Text>
+            <TodaySection />
           </MotiView>
         </View>
       </View>

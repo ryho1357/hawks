@@ -23,6 +23,11 @@ export const CLUB_INFO = {
       title: "Coach & Head of Training",
       bio: "Carlo oversees the technical and tactical training curriculum, ensuring each player progresses in skill, discipline, and understanding of the game. His attention to detail and passion for player development are central to the Hawks' success.",
     },
+    {
+      name: "Chris Steir",
+      title: "Admin-Coach",
+      bio: "Chris keeps our logistics tight — coordinating communications, scheduling, and team admin so coaches and players can focus on training.",
+    },
   ],
 };
 
@@ -35,6 +40,15 @@ export const HERO_CONTENT = {
     primary: "View Schedule",
     secondary: "Meet the Coaches",
   },
+};
+
+// Daily spotlight for parents/players
+export const TODAY_INFO = {
+  dateLabel: "Thursday • Nov 13",
+  sessionTitle: "Practice: Game Review",
+  time: "6:00 – 7:45 PM",
+  location: "9 Janet Court, Nesconset, NY 11767",
+  note: "Game review session so everyone knows what we're covering tonight.",
 };
 
 // Team Pillars / Core Values
