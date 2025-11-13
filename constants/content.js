@@ -42,15 +42,6 @@ export const HERO_CONTENT = {
   },
 };
 
-// Daily spotlight for parents/players
-export const TODAY_INFO = {
-  dateLabel: "Thursday • Nov 13",
-  sessionTitle: "Practice: Game Review",
-  time: "6:00 – 7:45 PM",
-  location: "9 Janet Court, Nesconset, NY 11767",
-  note: "Game review session so everyone knows what we're covering tonight.",
-};
-
 // Team Pillars / Core Values
 export const TEAM_PILLARS = [
   {
@@ -127,6 +118,14 @@ export const SCHEDULE_INFO = {
 };
 
 export const INDOOR_PRACTICE_SCHEDULE = [
+  {
+    date: "2025-11-13",
+    day: "Thu",
+    time: "6:00–7:45 PM",
+    title: "Practice: Game Review",
+    location: "9 Janet Court, Nesconset, NY 11767",
+    address: "Game review session so everyone knows what we're covering tonight.",
+  },
   { date: "2026-01-11", day: "Sun", time: "6:00–8:00 PM", location: "SPORTIME Kings Park", address: "275 Old Indian Head Road, Kings Park, NY 11754", link: "https://www.sportimeny.com/kingspark" },
   { date: "2026-01-18", day: "Sun", time: "6:00–8:00 PM", location: "SPORTIME Kings Park", address: "275 Old Indian Head Road, Kings Park, NY 11754", link: "https://www.sportimeny.com/kingspark" },
   { date: "2026-01-25", day: "Sun", time: "6:00–8:00 PM", location: "SPORTIME Kings Park", address: "275 Old Indian Head Road, Kings Park, NY 11754", link: "https://www.sportimeny.com/kingspark" },

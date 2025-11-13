@@ -1,12 +1,13 @@
 // app/hero.jsx - Enhanced version
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, TouchableOpacity, Dimensions, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { MotiView, MotiText } from 'moti';
 import { COLORS, SPACING, SHADOWS } from '../constants/design-system';
-import { HERO_CONTENT, TODAY_INFO } from '../constants/content';
+import { HERO_CONTENT, INDOOR_PRACTICE_SCHEDULE } from '../constants/content';
+import { getAllMatches } from '../constants/gameHistory';
 import { getResponsiveValue, isDesktop } from '../utils/responsive';
 
 
@@ -205,79 +206,195 @@ const TodayDetailRow = ({ icon, label, value }) => (
   </View>
 );
 
-const TodaySection = () => (
-  <MotiView
-    from={{
-      opacity: 0,
-      translateY: 30,
-    }}
-    animate={{
-      opacity: 1,
-      translateY: 0,
-    }}
-    transition={{
-      delay: 200,
-      type: 'spring',
-      damping: 18,
-    }}
-    style={{ width: '100%' }}
-  >
-    <View
-      style={{
-        width: '100%',
-        backgroundColor: 'rgba(255,255,255,0.95)',
-        borderRadius: 28,
-        padding: SPACING.xl,
-        borderWidth: 1,
-        borderColor: 'rgba(212,175,55,0.45)',
-        ...SHADOWS.large,
+const DAY_LABELS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const MONTH_LABELS_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+const toDateKey = (date) => {
+  if (!(date instanceof Date)) return '';
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
+const formatDateLabel = (date) => {
+  if (!(date instanceof Date)) return '';
+  return `${DAY_LABELS[date.getDay()]} • ${MONTH_LABELS_SHORT[date.getMonth()]} ${date.getDate()}`;
+};
+
+const buildTodaySchedule = (matches = [], practices = [], referenceDate = new Date()) => {
+  const todayKey = toDateKey(referenceDate);
+  if (!todayKey) return [];
+  const dateLabel = formatDateLabel(referenceDate);
+  const events = [];
+
+  matches.forEach((match, index) => {
+    if (match?.date !== todayKey) return;
+    events.push({
+      id: `match-${match.date}-${match?.opponent || index}`,
+      type: 'game',
+      dateLabel,
+      badge: match?.isHome ? 'Home Match' : 'Away Match',
+      badgeColors: {
+        bg: 'rgba(227,27,35,0.12)',
+        text: '#B91C1C',
+      },
+      title: `${match?.isHome ? 'vs' : '@'} ${match?.opponent || 'Opponent TBA'}`,
+      subtitle: match?.opponentClub || match?.seasonName,
+      time: match?.kickoff || 'Time TBD',
+      location: match?.location || 'Location TBD',
+      note: match?.notes || match?.seasonName || '',
+    });
+  });
+
+  practices.forEach((session, index) => {
+    if (session?.date !== todayKey) return;
+    events.push({
+      id: `practice-${session.date}-${index}`,
+      type: 'practice',
+      dateLabel,
+      badge: session?.title || 'Training',
+      badgeColors: {
+        bg: 'rgba(16,185,129,0.12)',
+        text: '#0F9D58',
+      },
+      title: session?.title || 'Indoor Practice',
+      subtitle: session?.location || session?.day || 'Indoor Session',
+      time: session?.time || 'Time TBD',
+      location: session?.location || 'Location TBD',
+      note: session?.address || '',
+    });
+  });
+
+  return events;
+};
+
+const TodaySection = ({ events }) => {
+  if (!events?.length) return null;
+  const dateLabel = events[0]?.dateLabel;
+
+  return (
+    <MotiView
+      from={{
+        opacity: 0,
+        translateY: 30,
       }}
+      animate={{
+        opacity: 1,
+        translateY: 0,
+      }}
+      transition={{
+        delay: 200,
+        type: 'spring',
+        damping: 18,
+      }}
+      style={{ width: '100%' }}
     >
-      <Text
+      <View
         style={{
-          fontSize: 14,
-          fontWeight: '700',
-          letterSpacing: 2,
-          color: COLORS.primary,
-          marginBottom: SPACING.xs,
+          width: '100%',
+          backgroundColor: 'rgba(255,255,255,0.95)',
+          borderRadius: 28,
+          padding: SPACING.xl,
+          borderWidth: 1,
+          borderColor: 'rgba(212,175,55,0.45)',
+          ...SHADOWS.large,
         }}
       >
-        TODAY
-      </Text>
-      <Text
-        style={{
-          fontSize: 20,
-          fontWeight: '700',
-          color: COLORS.text.primary,
-          marginBottom: SPACING.xs,
-        }}
-      >
-        {TODAY_INFO.dateLabel}
-      </Text>
-      <Text
-        style={{
-          fontSize: 18,
-          fontWeight: '600',
-          color: COLORS.text.secondary,
-          marginBottom: SPACING.lg,
-        }}
-      >
-        {TODAY_INFO.sessionTitle}
-      </Text>
-      <TodayDetailRow icon="schedule" label="Time" value={TODAY_INFO.time} />
-      <TodayDetailRow icon="place" label="Location" value={TODAY_INFO.location} />
-      <Text
-        style={{
-          marginTop: SPACING.sm,
-          color: COLORS.text.secondary,
-          lineHeight: 22,
-        }}
-      >
-        {TODAY_INFO.note}
-      </Text>
-    </View>
-  </MotiView>
-);
+        <Text
+          style={{
+            fontSize: 14,
+            fontWeight: '700',
+            letterSpacing: 2,
+            color: COLORS.primary,
+            marginBottom: SPACING.xs,
+          }}
+        >
+          TODAY
+        </Text>
+        <Text
+          style={{
+            fontSize: 20,
+            fontWeight: '700',
+            color: COLORS.text.primary,
+            marginBottom: SPACING.lg,
+          }}
+        >
+          {dateLabel}
+        </Text>
+
+        {events.map((event, index) => (
+          <View
+            key={event.id}
+            style={{
+              marginTop: index === 0 ? 0 : SPACING.xl,
+              paddingTop: index === 0 ? 0 : SPACING.md,
+              borderTopWidth: index === 0 ? 0 : StyleSheet.hairlineWidth,
+              borderTopColor: 'rgba(0,0,0,0.08)',
+            }}
+          >
+            <View
+              style={{
+                alignSelf: 'flex-start',
+                paddingHorizontal: SPACING.md,
+                paddingVertical: 4,
+                borderRadius: 999,
+                backgroundColor: event.badgeColors.bg,
+                marginBottom: SPACING.sm,
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 12,
+                  fontWeight: '700',
+                  color: event.badgeColors.text,
+                  letterSpacing: 1,
+                }}
+              >
+                {event.badge}
+              </Text>
+            </View>
+            <Text
+              style={{
+                fontSize: 20,
+                fontWeight: '700',
+                color: COLORS.text.primary,
+              }}
+            >
+              {event.title}
+            </Text>
+            {event.subtitle ? (
+              <Text
+                style={{
+                  fontSize: 15,
+                  color: COLORS.text.secondary,
+                  marginTop: 2,
+                }}
+              >
+                {event.subtitle}
+              </Text>
+            ) : null}
+            <View style={{ marginTop: SPACING.md }}>
+              <TodayDetailRow icon="schedule" label="Time" value={event.time} />
+              <TodayDetailRow icon="place" label="Location" value={event.location} />
+            </View>
+            {event.note ? (
+              <Text
+                style={{
+                  marginTop: SPACING.sm,
+                  color: COLORS.text.secondary,
+                  lineHeight: 22,
+                }}
+              >
+                {event.note}
+              </Text>
+            ) : null}
+          </View>
+        ))}
+      </View>
+    </MotiView>
+  );
+};
 
 const navigateToSlug = (router, slug) => {
   if (slug === 'home') {
@@ -290,6 +407,11 @@ const navigateToSlug = (router, slug) => {
 export default function Hero() {
   const router = useRouter();
   const heroHeight = getResponsiveValue(height * 0.8, height * 0.7, height * 0.9);
+  const allMatches = useMemo(() => getAllMatches(), []);
+  const todaySchedule = useMemo(
+    () => buildTodaySchedule(allMatches, INDOOR_PRACTICE_SCHEDULE),
+    [allMatches]
+  );
 
   return (
 
@@ -423,7 +545,7 @@ export default function Hero() {
             >
               {HERO_CONTENT.subheadline}
             </Text>
-            <TodaySection />
+            <TodaySection events={todaySchedule} />
           </MotiView>
         </View>
       </View>
