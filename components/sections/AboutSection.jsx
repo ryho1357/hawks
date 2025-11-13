@@ -267,9 +267,11 @@ export default function AboutSection() {
                   style={{
                     flexDirection: 'row',
                     alignItems: 'center',
-                    backgroundColor: COLORS.secondaryLight,
+                    backgroundColor: COLORS.background.secondary,
                     borderRadius: BORDER_RADIUS.lg,
                     padding: SPACING.md,
+                    borderWidth: 1,
+                    borderColor: COLORS.background.tertiary,
                   }}
                 >
                   <MaterialIcons
@@ -282,6 +284,7 @@ export default function AboutSection() {
                     style={{
                       fontSize: TYPOGRAPHY.sizes.md,
                       color: COLORS.text.primary,
+                      fontWeight: TYPOGRAPHY.weights.medium,
                     }}
                   >
                     {value}

@@ -1,0 +1,119 @@
+{
+  "id": "fall-2024-lijsl",
+  "season": "Fall 2024",
+  "division": "Division 7E BU12",
+  "competition": "LIJSL League",
+  "ageGroup": "BU12",
+  "year": "2024/2025",
+  "team": "Smithtown Hawks",
+  "games": [
+    {
+      "date": "2024-11-17",
+      "day": "Sun",
+      "kickoff": "10:20 AM",
+      "location": "Moriches Soccer Park 4",
+      "isHome": true,
+      "opponentClub": "MIDDLE COUNTRY CHILDREN SC (LIJSL)",
+      "opponent": "Fury Orange",
+      "score": { "hawks": 4, "opponent": 1 },
+      "result": "W",
+      "notes": "Finale win vs Fury Orange"
+    },
+    {
+      "date": "2024-11-09",
+      "day": "Sat",
+      "kickoff": "1:00 PM",
+      "location": "Stony Brook P Lot #7 (9v9)",
+      "isHome": false,
+      "opponentClub": "ATLANTIC UNITED SB/LGN SC",
+      "opponent": "Rampage Black B2013",
+      "score": { "hawks": 1, "opponent": 3 },
+      "result": "L",
+      "notes": "Road setback vs Rampage Black"
+    },
+    {
+      "date": "2024-11-02",
+      "day": "Sat",
+      "kickoff": "10:20 AM",
+      "location": "Moriches Soccer Park 4",
+      "isHome": true,
+      "opponentClub": "WEST ISLIP SOCCER CLUB",
+      "opponent": "CF Real Madrid",
+      "score": { "hawks": 13, "opponent": 2 },
+      "result": "W",
+      "notes": "13-goal explosion vs CF Real Madrid"
+    },
+    {
+      "date": "2024-10-27",
+      "day": "Sun",
+      "kickoff": "10:20 AM",
+      "location": "Moriches Soccer Park 4",
+      "isHome": true,
+      "opponentClub": "NORTHPORT COW HARBOR UNITED SOCCER CLUB",
+      "opponent": "Napoli",
+      "score": { "hawks": 5, "opponent": 5 },
+      "result": "D",
+      "notes": "Five-all draw vs Napoli"
+    },
+    {
+      "date": "2024-10-19",
+      "day": "Sat",
+      "kickoff": "2:30 PM",
+      "location": "Albert G. Prodell Middle School (7v7)",
+      "isHome": false,
+      "opponentClub": "SOUND BEACH",
+      "opponent": "Athletico",
+      "score": { "hawks": 4, "opponent": 4 },
+      "result": "D",
+      "notes": "Back-and-forth at Sound Beach"
+    },
+    {
+      "date": "2024-09-28",
+      "day": "Sat",
+      "kickoff": "1:00 PM",
+      "location": "Moriches Soccer Park 4",
+      "isHome": true,
+      "opponentClub": "NORTH FORK (LIJSL)",
+      "opponent": "Seahawks",
+      "score": { "hawks": 9, "opponent": 0 },
+      "result": "W",
+      "notes": "Nine-goal shutout vs Seahawks"
+    },
+    {
+      "date": "2024-09-21",
+      "day": "Sat",
+      "kickoff": "9:00 AM",
+      "location": "Downs Family Park (9v9)",
+      "isHome": false,
+      "opponentClub": "SOUTHAMPTON SOCCER CLUB",
+      "opponent": "Boys 2013 Orange",
+      "score": { "hawks": 3, "opponent": 3 },
+      "result": "D",
+      "notes": "Draw away at Southampton"
+    },
+    {
+      "date": "2024-09-14",
+      "day": "Sat",
+      "kickoff": "2:20 PM",
+      "location": "Moriches Soccer Park 4",
+      "isHome": true,
+      "opponentClub": "TERRYVILLE (LIJSL)",
+      "opponent": "Raptors",
+      "score": { "hawks": 5, "opponent": 11 },
+      "result": "L",
+      "notes": "High-scoring battle vs Raptors"
+    },
+    {
+      "date": "2024-09-07",
+      "day": "Sat",
+      "kickoff": "1:20 PM",
+      "location": "Venetian Shores Park (9v9)",
+      "isHome": false,
+      "opponentClub": "LINDENHURST SOCCER CLUB (LIJSL)",
+      "opponent": "Dragons",
+      "score": { "hawks": 5, "opponent": 0 },
+      "result": "W",
+      "notes": "Season-opening shutout at Lindenhurst"
+    }
+  ]
+}

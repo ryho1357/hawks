@@ -1,0 +1,34 @@
+{
+  "id": "long-island-cup-2025",
+  "season": "Spring 2025",
+  "division": "Bronze BU12",
+  "competition": "2025 Long Island Cup",
+  "ageGroup": "BU12",
+  "team": "Smithtown Hawks",
+  "games": [
+    {
+      "date": "2025-04-27",
+      "day": "Sun",
+      "kickoff": "1:20 PM",
+      "location": "North Coleman Elementary (9v9)",
+      "isHome": false,
+      "opponentClub": "ATLANTIC UNITED SB/LGN SC",
+      "opponent": "Rampage Black B2013",
+      "score": { "hawks": 1, "opponent": 2 },
+      "result": "L",
+      "notes": "Tight cup loss to Rampage Black"
+    },
+    {
+      "date": "2025-03-29",
+      "day": "Sat",
+      "kickoff": "3:40 PM",
+      "location": "Moriches Soccer Park 4",
+      "isHome": true,
+      "opponentClub": "NEW HYDE PARK WILDCATS SOCCER CLUB",
+      "opponent": "Leopards",
+      "score": { "hawks": 8, "opponent": 3 },
+      "result": "W",
+      "notes": "Eight-goal cup opener vs Leopards"
+    }
+  ]
+}

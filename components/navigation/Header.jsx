@@ -13,7 +13,7 @@ const navigateToSlug = (router, slug) => {
     return;
   }
 
-  router.replace({ pathname: '/', params: { page: slug } });
+  router.replace(`/${slug}`);
 };
 
 export default function Header() {
@@ -22,17 +22,21 @@ export default function Header() {
   const { page } = useLocalSearchParams();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const activeSlug = pathname === '/' ? (Array.isArray(page) ? page[0] : page) || 'home' : null;
+  const derivedSlug = React.useMemo(() => {
+    if (pathname === '/') {
+      return (Array.isArray(page) ? page[0] : page) || 'home';
+    }
+
+    const normalized = pathname.replace(/^\/+/, '').replace(/\/+$/, '');
+    return normalized.length ? normalized : 'home';
+  }, [pathname, page]);
 
   const handleNavigation = (slug) => {
     navigateToSlug(router, slug);
     setMobileMenuOpen(false);
   };
 
-  const isActive = (slug) => {
-    if (pathname !== '/') return false;
-    return (activeSlug || 'home') === slug;
-  };
+  const isActive = (slug) => derivedSlug === slug;
 
   return (
     <View style={{ 

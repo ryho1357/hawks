@@ -1,0 +1,119 @@
+{
+  "id": "spring-2025-lijsl",
+  "season": "Spring 2025",
+  "division": "Division 6E BU12",
+  "competition": "LIJSL League",
+  "ageGroup": "BU12",
+  "year": "2024/2025",
+  "team": "Smithtown Hawks",
+  "games": [
+    {
+      "date": "2025-06-14",
+      "day": "Sat",
+      "kickoff": "2:20 PM",
+      "location": "Moriches Soccer Park 4",
+      "isHome": false,
+      "opponentClub": "SMITHTOWN KICKERS SC (LIJSL)",
+      "opponent": "Bulls 2013",
+      "score": { "hawks": 2, "opponent": 2 },
+      "result": "D",
+      "notes": "Derby draw vs Bulls 2013"
+    },
+    {
+      "date": "2025-06-07",
+      "day": "Sat",
+      "kickoff": "11:40 AM",
+      "location": "Peter C. Collins Soccer Park SP2",
+      "isHome": true,
+      "opponentClub": "LONGWOOD SOCCER CLUB",
+      "opponent": "Blizzards",
+      "score": { "hawks": 7, "opponent": 1 },
+      "result": "W",
+      "notes": "Seven goals vs Longwood Blizzards"
+    },
+    {
+      "date": "2025-05-31",
+      "day": "Sat",
+      "kickoff": "2:00 PM",
+      "location": "Peter C. Collins Soccer Park SP2",
+      "isHome": false,
+      "opponentClub": "MASTIC (LIJSL)",
+      "opponent": "Mastic Lightning",
+      "score": { "hawks": 6, "opponent": 5 },
+      "result": "W",
+      "notes": "Road thriller vs Mastic Lightning"
+    },
+    {
+      "date": "2025-05-17",
+      "day": "Sat",
+      "kickoff": "9:00 AM",
+      "location": "Peter C. Collins Soccer Park SP2",
+      "isHome": true,
+      "opponentClub": "LONGWOOD SOCCER CLUB",
+      "opponent": "Inferno",
+      "score": { "hawks": 4, "opponent": 4 },
+      "result": "D",
+      "notes": "High-scoring draw vs Inferno"
+    },
+    {
+      "date": "2025-05-10",
+      "day": "Sat",
+      "kickoff": "12:40 PM",
+      "location": "Peter C. Collins Soccer Park SP2",
+      "isHome": false,
+      "opponentClub": "ATLANTIC UNITED SB/LGN SC",
+      "opponent": "B2013 Red (Rampage Black)",
+      "score": { "hawks": 3, "opponent": 2 },
+      "result": "W",
+      "notes": "Comeback win vs Rampage Black"
+    },
+    {
+      "date": "2025-05-03",
+      "day": "Sat",
+      "kickoff": "5:55 PM",
+      "location": "Peter C. Collins Soccer Park SP2",
+      "isHome": false,
+      "opponentClub": "LINDENHURST SOCCER CLUB (LIJSL)",
+      "opponent": "Nightmare",
+      "score": { "hawks": 6, "opponent": 1 },
+      "result": "W",
+      "notes": "Six goals on the road vs Nightmare"
+    },
+    {
+      "date": "2025-04-26",
+      "day": "Sat",
+      "kickoff": "9:00 AM",
+      "location": "Peter C. Collins Soccer Park SP2",
+      "isHome": true,
+      "opponentClub": "BRENTWOOD SC (LIJSL)",
+      "opponent": "2013 Pre-Academy Black",
+      "score": { "hawks": 6, "opponent": 3 },
+      "result": "W",
+      "notes": "Strong home win vs Brentwood"
+    },
+    {
+      "date": "2025-04-05",
+      "day": "Sat",
+      "kickoff": "11:40 AM",
+      "location": "Peter C. Collins Soccer Park SP2",
+      "isHome": false,
+      "opponentClub": "LINDENHURST SOCCER CLUB (LIJSL)",
+      "opponent": "Gators",
+      "score": { "hawks": 5, "opponent": 1 },
+      "result": "W",
+      "notes": "Road win vs Lindenhurst Gators"
+    },
+    {
+      "date": "2025-03-22",
+      "day": "Sat",
+      "kickoff": "2:20 PM",
+      "location": "Peter C. Collins Soccer Park SP2",
+      "isHome": true,
+      "opponentClub": "MOUNT SINAI YOUTH SOCCER",
+      "opponent": "United",
+      "score": { "hawks": 8, "opponent": 2 },
+      "result": "W",
+      "notes": "Eight goals to open the spring"
+    }
+  ]
+}

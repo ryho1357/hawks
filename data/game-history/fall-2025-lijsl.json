@@ -1,0 +1,107 @@
+{
+  "id": "fall-2025-lijsl",
+  "season": "Fall 2025",
+  "division": "Division 4E BU13",
+  "competition": "LIJSL League",
+  "ageGroup": "BU13",
+  "year": "2025/2026",
+  "team": "Smithtown Hawks",
+  "games": [
+    {
+      "date": "2025-11-01",
+      "day": "Sat",
+      "kickoff": "3:00 PM",
+      "location": "Moriches Soccer Park 1",
+      "isHome": true,
+      "opponentClub": "SOUND BEACH",
+      "opponent": "Madrid",
+      "score": { "hawks": 3, "opponent": 0 },
+      "result": "W",
+      "notes": "Clean sheet vs Sound Beach Madrid"
+    },
+    {
+      "date": "2025-10-25",
+      "day": "Sat",
+      "kickoff": "4:30 PM",
+      "location": "Moriches Soccer Park 2",
+      "isHome": true,
+      "opponentClub": "SMITHTOWN KICKERS SC (LIJSL)",
+      "opponent": "Smithtown United",
+      "score": { "hawks": 2, "opponent": 7 },
+      "result": "L",
+      "notes": "Tough derby vs Smithtown United"
+    },
+    {
+      "date": "2025-10-18",
+      "day": "Sat",
+      "kickoff": "3:00 PM",
+      "location": "Stratford Road Elementary (11v11)",
+      "isHome": false,
+      "opponentClub": "PLAINVIEW OLD BETHPAGE (LIJSL)",
+      "opponent": "POB FC",
+      "score": { "hawks": 4, "opponent": 2 },
+      "result": "W",
+      "notes": "Four away goals at POB FC"
+    },
+    {
+      "date": "2025-10-04",
+      "day": "Sat",
+      "kickoff": "9:00 AM",
+      "location": "Moriches Soccer Park 1",
+      "isHome": true,
+      "opponentClub": "HARBORFIELDS SOCCER CLUB",
+      "opponent": "Harborfields Impact",
+      "score": { "hawks": 4, "opponent": 2 },
+      "result": "W",
+      "notes": "Home win vs Harborfields Impact"
+    },
+    {
+      "date": "2025-09-27",
+      "day": "Sat",
+      "kickoff": "3:00 PM",
+      "location": "Moriches Soccer Park 1",
+      "isHome": true,
+      "opponentClub": "SACHEM SLAMMERS",
+      "opponent": "Gold B14",
+      "score": { "hawks": 5, "opponent": 1 },
+      "result": "W",
+      "notes": "Five-goal performance vs Sachem"
+    },
+    {
+      "date": "2025-09-20",
+      "day": "Sat",
+      "kickoff": "1:00 PM",
+      "location": "West Islip Senior High School Barberry",
+      "isHome": false,
+      "opponentClub": "WEST ISLIP SOCCER CLUB",
+      "opponent": "WI Man City FC",
+      "score": { "hawks": 1, "opponent": 1 },
+      "result": "D",
+      "notes": "Road draw in West Islip"
+    },
+    {
+      "date": "2025-09-13",
+      "day": "Sat",
+      "kickoff": "3:00 PM",
+      "location": "Moriches Soccer Park 2",
+      "isHome": true,
+      "opponentClub": "MANORVILLE (LIJSL)",
+      "opponent": "Arsenal",
+      "score": { "hawks": 2, "opponent": 3 },
+      "result": "L",
+      "notes": "Close match vs Manorville Arsenal"
+    },
+    {
+      "date": "2025-09-06",
+      "day": "Sat",
+      "kickoff": "2:00 PM",
+      "location": "Miller Place High School Stadium Turf",
+      "isHome": false,
+      "opponentClub": "SOUND BEACH",
+      "opponent": "Madrid",
+      "score": { "hawks": 6, "opponent": 0 },
+      "result": "W",
+      "notes": "Six away goals at Sound Beach"
+    }
+  ]
+}

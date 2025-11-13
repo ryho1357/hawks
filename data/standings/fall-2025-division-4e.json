@@ -1,0 +1,17 @@
+{
+  "id": "fall-2025-division-4e",
+  "season": "Fall 2025",
+  "league": "LIJSL League",
+  "division": "Division 4E BU13",
+  "year": "2025/2026",
+  "entries": [
+    {"rank": 1, "club": "Smithtown Kickers SC (LIJSL)", "team": "Smithtown United", "gamesPlayed": 9, "goalDifference": 28, "points": 23, "goalsFor": 36, "goalsAgainst": 8, "record": {"wins": 7, "draws": 2, "losses": 0}},
+    {"rank": 2, "club": "Smithtown Kickers SC (LIJSL)", "team": "Smithtown Hawks", "gamesPlayed": 8, "goalDifference": 11, "points": 16, "goalsFor": 27, "goalsAgainst": 16, "record": {"wins": 5, "draws": 1, "losses": 2}},
+    {"rank": 3, "club": "Plainview Old Bethpage (LIJSL)", "team": "POB FC", "gamesPlayed": 9, "goalDifference": 1, "points": 14, "goalsFor": 26, "goalsAgainst": 25, "record": {"wins": 4, "draws": 2, "losses": 3}},
+    {"rank": 4, "club": "Manorville (LIJSL)", "team": "Arsenal", "gamesPlayed": 8, "goalDifference": 3, "points": 13, "goalsFor": 19, "goalsAgainst": 16, "record": {"wins": 4, "draws": 1, "losses": 3}},
+    {"rank": 5, "club": "Harborfields Soccer Club", "team": "Harborfields Impact", "gamesPlayed": 8, "goalDifference": -3, "points": 8, "goalsFor": 16, "goalsAgainst": 19, "record": {"wins": 2, "draws": 2, "losses": 4}},
+    {"rank": 6, "club": "West Islip Soccer Club", "team": "WI Man City FC", "gamesPlayed": 9, "goalDifference": -6, "points": 8, "goalsFor": 10, "goalsAgainst": 16, "record": {"wins": 2, "draws": 2, "losses": 5}},
+    {"rank": 7, "club": "Sound Beach", "team": "Madrid", "gamesPlayed": 8, "goalDifference": -17, "points": 7, "goalsFor": 7, "goalsAgainst": 24, "record": {"wins": 2, "draws": 1, "losses": 5}},
+    {"rank": 8, "club": "Sachem Slammers", "team": "Gold B14", "gamesPlayed": 9, "goalDifference": -17, "points": 7, "goalsFor": 14, "goalsAgainst": 31, "record": {"wins": 2, "draws": 1, "losses": 6}}
+  ]
+}

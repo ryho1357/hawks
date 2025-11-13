@@ -1,0 +1,19 @@
+{
+  "id": "fall-2024-division-7e",
+  "season": "Fall 2024",
+  "league": "LIJSL League",
+  "division": "Division 7E BU12",
+  "year": "2024/2025",
+  "entries": [
+    {"rank": 1, "club": "Terryville (LIJSL)", "team": "Raptors", "gamesPlayed": 9, "goalDifference": 34, "points": 27, "goalsFor": 48, "goalsAgainst": 14, "record": {"wins": 9, "draws": 0, "losses": 0}},
+    {"rank": 2, "club": "Atlantic United SB/LGN SC", "team": "Rampage Black B2013", "gamesPlayed": 9, "goalDifference": 26, "points": 24, "goalsFor": 31, "goalsAgainst": 5, "record": {"wins": 8, "draws": 0, "losses": 1}},
+    {"rank": 3, "club": "Smithtown Kickers SC (LIJSL)", "team": "Smithtown Hawks", "gamesPlayed": 9, "goalDifference": 20, "points": 15, "goalsFor": 49, "goalsAgainst": 29, "record": {"wins": 4, "draws": 3, "losses": 2}},
+    {"rank": 4, "club": "Sound Beach", "team": "Athletico", "gamesPlayed": 9, "goalDifference": 8, "points": 14, "goalsFor": 23, "goalsAgainst": 15, "record": {"wins": 4, "draws": 2, "losses": 3}},
+    {"rank": 5, "club": "Southampton Soccer Club", "team": "Boys 2013 Orange", "gamesPlayed": 9, "goalDifference": -2, "points": 14, "goalsFor": 25, "goalsAgainst": 27, "record": {"wins": 4, "draws": 2, "losses": 3}},
+    {"rank": 6, "club": "Northport Cow Harbor United Soccer Club", "team": "Napoli", "gamesPlayed": 9, "goalDifference": 9, "points": 13, "goalsFor": 33, "goalsAgainst": 24, "record": {"wins": 4, "draws": 1, "losses": 4}},
+    {"rank": 7, "club": "Middle Country Children SC (LIJSL)", "team": "Fury Orange", "gamesPlayed": 9, "goalDifference": -3, "points": 13, "goalsFor": 25, "goalsAgainst": 28, "record": {"wins": 4, "draws": 1, "losses": 4}},
+    {"rank": 8, "club": "North Fork (LIJSL)", "team": "Seahawks", "gamesPlayed": 9, "goalDifference": -14, "points": 7, "goalsFor": 14, "goalsAgainst": 28, "record": {"wins": 2, "draws": 1, "losses": 6}},
+    {"rank": 9, "club": "West Islip Soccer Club", "team": "CF Real Madrid", "gamesPlayed": 9, "goalDifference": -39, "points": 3, "goalsFor": 9, "goalsAgainst": 48, "record": {"wins": 1, "draws": 0, "losses": 8}},
+    {"rank": 10, "club": "Lindenhurst Soccer Club (LIJSL)", "team": "Dragons", "gamesPlayed": 9, "goalDifference": -39, "points": 0, "goalsFor": 4, "goalsAgainst": 43, "record": {"wins": 0, "draws": 0, "losses": 9}}
+  ]
+}

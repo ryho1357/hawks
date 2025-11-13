@@ -1,4 +1,8 @@
 // constants/content.js
+import { GAME_HISTORY, getAggregateTotals, getSeasonSummary } from './gameHistory';
+
+const AGGREGATE_TOTALS = getAggregateTotals();
+const CURRENT_SEASON = getSeasonSummary(GAME_HISTORY[0]?.id);
 
 // Club Information
 export const CLUB_INFO = {
@@ -61,21 +65,23 @@ export const TEAM_PILLARS = [
   },
 ];
 
+const DEFAULT_RECORD = { wins: 0, draws: 0, losses: 0 };
+
 // Season Information
 export const TEAM_HISTORY = {
   totals: {
-    matchesPlayed: 26,
-    wins: 16,
-    draws: 6,
-    losses: 4,
+    matchesPlayed: AGGREGATE_TOTALS.matchesPlayed,
+    wins: AGGREGATE_TOTALS.wins,
+    draws: AGGREGATE_TOTALS.draws,
+    losses: AGGREGATE_TOTALS.losses,
   },
   currentSeason: {
-    season: "Fall 2025",
-    division: "LIJSL Division 4E (BU13)",
-    matchesPlayed: 8,
-    wins: 5,
-    draws: 1,
-    losses: 2,
+    season: CURRENT_SEASON?.season || "Season TBA",
+    division: CURRENT_SEASON?.division || "Division TBA",
+    matchesPlayed: CURRENT_SEASON?.matchesPlayed || 0,
+    wins: CURRENT_SEASON?.record?.wins ?? DEFAULT_RECORD.wins,
+    draws: CURRENT_SEASON?.record?.draws ?? DEFAULT_RECORD.draws,
+    losses: CURRENT_SEASON?.record?.losses ?? DEFAULT_RECORD.losses,
   },
   highlight: "Promoted from Division 7 → 6 → 4 in just two years.",
 };
@@ -106,18 +112,8 @@ export const SCHEDULE_INFO = {
   },
 };
 
-// Team Stats Summary
-export const TEAM_STATS = {
-  goalsScored: 62,
-  goalsAllowed: 34,
-  cleanSheets: 8,
-  playerCount: 18,
-  streak: "3-game unbeaten run",
-};
-
 // Team Roster
-export const TEAM_ROSTER = [];
-export const TEAM_ROSTER_New = [
+export const TEAM_ROSTER = [
   { name: "Julian Carazo" },
   { name: "Lucas Cianci" },
   { name: "Nathaniel Donlon" },
@@ -136,3 +132,14 @@ export const TEAM_ROSTER_New = [
   { name: "Storm Stier" },
   { name: "Robert Sullivan" },
 ];
+
+// Team Stats Summary
+export const TEAM_STATS = {
+  goalsScored: AGGREGATE_TOTALS.goalsFor,
+  goalsAllowed: AGGREGATE_TOTALS.goalsAgainst,
+  cleanSheets: AGGREGATE_TOTALS.cleanSheets,
+  playerCount: TEAM_ROSTER.length,
+  streak: CURRENT_SEASON
+    ? `${CURRENT_SEASON.season} form: ${CURRENT_SEASON.record?.wins ?? 0}-${CURRENT_SEASON.record?.draws ?? 0}-${CURRENT_SEASON.record?.losses ?? 0}`
+    : "Season loading",
+};
