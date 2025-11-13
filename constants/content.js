@@ -11,7 +11,7 @@ export const CLUB_INFO = {
   founded: "2022",
   description:
     "The Smithtown Hawks are a competitive U13 boys travel soccer team competing in the LIJSL. We focus on development, teamwork, and leadership — helping young players grow on and off the field.",
-  email: "hawks@smithtownsoccer.com",
+  email: "ryanjhofman@gmail.com",
   leadership: [
     {
       name: "Ryan Hofman",
@@ -19,13 +19,13 @@ export const CLUB_INFO = {
       bio: "Ryan founded the Smithtown Hawks with a player-first vision — blending structure, creativity, and accountability to develop resilient athletes. Under his leadership, the Hawks have earned multiple promotions and built a strong, family-like culture.",
     },
     {
-      name: "Carlo",
-      title: "Coach & Head of Training",
+      name: "Carlo Scanni",
+      title: "Head of Training",
       bio: "Carlo oversees the technical and tactical training curriculum, ensuring each player progresses in skill, discipline, and understanding of the game. His attention to detail and passion for player development are central to the Hawks' success.",
     },
     {
       name: "Chris Steir",
-      title: "Admin-Coach",
+      title: "Head of Administration",
       bio: "Chris keeps our logistics tight — coordinating communications, scheduling, and team admin so coaches and players can focus on training.",
     },
   ],
@@ -125,6 +125,18 @@ export const SCHEDULE_INFO = {
     location: "Manorville",
   },
 };
+
+export const INDOOR_PRACTICE_SCHEDULE = [
+  { date: "2026-01-11", day: "Sun", time: "6:00–8:00 PM", location: "SPORTIME Kings Park", address: "275 Old Indian Head Road, Kings Park, NY 11754", link: "https://www.sportimeny.com/kingspark" },
+  { date: "2026-01-18", day: "Sun", time: "6:00–8:00 PM", location: "SPORTIME Kings Park", address: "275 Old Indian Head Road, Kings Park, NY 11754", link: "https://www.sportimeny.com/kingspark" },
+  { date: "2026-01-25", day: "Sun", time: "6:00–8:00 PM", location: "SPORTIME Kings Park", address: "275 Old Indian Head Road, Kings Park, NY 11754", link: "https://www.sportimeny.com/kingspark" },
+  { date: "2026-02-01", day: "Sun", time: "6:00–8:00 PM", location: "SPORTIME Kings Park", address: "275 Old Indian Head Road, Kings Park, NY 11754", link: "https://www.sportimeny.com/kingspark" },
+  { date: "2026-02-08", day: "Sun", time: "6:00–8:00 PM", location: "SPORTIME Kings Park", address: "275 Old Indian Head Road, Kings Park, NY 11754", link: "https://www.sportimeny.com/kingspark" },
+  { date: "2026-02-15", day: "Sun", time: "6:00–8:00 PM", location: "SPORTIME Kings Park", address: "275 Old Indian Head Road, Kings Park, NY 11754", link: "https://www.sportimeny.com/kingspark" },
+  { date: "2026-02-22", day: "Sun", time: "6:00–8:00 PM", location: "SPORTIME Kings Park", address: "275 Old Indian Head Road, Kings Park, NY 11754", link: "https://www.sportimeny.com/kingspark" },
+  { date: "2026-03-01", day: "Sun", time: "6:00–8:00 PM", location: "SPORTIME Kings Park", address: "275 Old Indian Head Road, Kings Park, NY 11754", link: "https://www.sportimeny.com/kingspark" },
+  { date: "2026-03-08", day: "Sun", time: "6:00–8:00 PM", location: "SPORTIME Kings Park", address: "275 Old Indian Head Road, Kings Park, NY 11754", link: "https://www.sportimeny.com/kingspark" },
+];
 
 // Team Roster
 export const TEAM_ROSTER = [

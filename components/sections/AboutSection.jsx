@@ -1,6 +1,6 @@
 import React from 'react';
 import { ScrollView, View, Text } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { COLORS, SPACING, SHADOWS, BORDER_RADIUS, TYPOGRAPHY } from '../../constants/design-system';
 import { CLUB_INFO, TEAM_PILLARS, COACHING_PHILOSOPHY, TEAM_HISTORY } from '../../constants/content';
 import Container from '../ui/Container';
@@ -74,30 +74,47 @@ const LeadershipCard = ({ leader }) => (
       ...SHADOWS.small,
     }}
   >
+    {/* Icon at the top */}
+    <Ionicons
+      name="football" // This is the soccer ball icon in Ionicons
+      size={64}
+      color={COLORS.primary}
+      style={{ alignSelf: 'center', marginBottom: SPACING.md }}
+    />
+    
+    {/* Name */}
     <Text
       style={{
-        fontSize: TYPOGRAPHY.sizes.lg,
+        fontSize: TYPOGRAPHY.sizes.xl,
         fontWeight: TYPOGRAPHY.weights.semibold,
         color: COLORS.text.primary,
+        textAlign: 'center',
+        marginBottom: SPACING.xs,
       }}
     >
       {leader.name}
     </Text>
+    
+    {/* Title */}
     <Text
       style={{
-        fontSize: TYPOGRAPHY.sizes.sm,
+        fontSize: TYPOGRAPHY.sizes.lg,
         color: COLORS.primary,
-        marginTop: 2,
-        marginBottom: SPACING.sm,
+        textAlign: 'center',
+        marginBottom: SPACING.md,
+        fontWeight: TYPOGRAPHY.weights.medium,
       }}
     >
       {leader.title}
     </Text>
+    
+    {/* Bio */}
     <Text
       style={{
         fontSize: TYPOGRAPHY.sizes.md,
         lineHeight: 22,
         color: COLORS.text.secondary,
+        textAlign: 'center',
       }}
     >
       {leader.bio}

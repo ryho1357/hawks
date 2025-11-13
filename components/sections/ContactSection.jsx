@@ -179,45 +179,12 @@ export default function ContactSection() {
           </Text>
           <ContactRow
             icon="mail"
-            label="General Inquiries"
+            label="General Inquiries and Tryout Information:"
             value={CLUB_INFO.email}
             onPress={handleEmail}
           />
-          <ContactRow
-            icon="sports-soccer"
-            label="Latest Team Run"
-            value={TEAM_STATS.streak}
-          />
-          <ContactRow
-            icon="event"
-            label="Next Match"
-            value={`${SCHEDULE_INFO.nextGame.date} vs ${SCHEDULE_INFO.nextGame.opponent} · ${SCHEDULE_INFO.nextGame.location}`}
-          />
         </View>
 
-        <View>
-          <Text
-            style={{
-              fontSize: TYPOGRAPHY.sizes.xxl,
-              fontWeight: TYPOGRAPHY.weights.semibold,
-              color: COLORS.text.primary,
-              marginBottom: SPACING.lg,
-            }}
-          >
-            Training Schedule
-          </Text>
-          <View
-            style={{
-              flexDirection: 'row',
-              flexWrap: 'wrap',
-              justifyContent: 'flex-start',
-            }}
-          >
-            {SCHEDULE_INFO.practice.map((session) => (
-              <PracticeCard key={session.day} session={session} />
-            ))}
-          </View>
-        </View>
       </Container>
     </ScrollView>
   );

@@ -1,45 +1,172 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ScrollView, View, Text, Animated, TouchableOpacity } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
 import { COLORS, SPACING, SHADOWS, BORDER_RADIUS, TYPOGRAPHY } from '../../constants/design-system';
-import { TEAM_STATS, TEAM_ROSTER, TEAM_HISTORY } from '../../constants/content';
+import { TEAM_STATS, TEAM_ROSTER, TEAM_HISTORY, INDOOR_PRACTICE_SCHEDULE } from '../../constants/content';
 import { GAME_HISTORY, getAllMatches } from '../../constants/gameHistory';
 import { STANDINGS } from '../../constants/standings';
 import Container from '../ui/Container';
 import { isDesktop, isTablet } from '../../utils/responsive';
+
+const TOTAL_MATCHES = TEAM_HISTORY.totals.matchesPlayed || 0;
+const percentLabel = (value) => `${value.toFixed(1)}%`;
+const winPercentage = TOTAL_MATCHES ? percentLabel((TEAM_HISTORY.totals.wins / TOTAL_MATCHES) * 100) : '0%';
+const nonLossPercentage = TOTAL_MATCHES
+  ? percentLabel(((TOTAL_MATCHES - TEAM_HISTORY.totals.losses) / TOTAL_MATCHES) * 100)
+  : '0%';
 
 const stats = [
   {
     label: 'Matches Played',
     value: TEAM_HISTORY.totals.matchesPlayed,
     icon: 'calendar-today',
+    accent: {
+      gradient: ['#FFFFFF', '#F2F6FF'],
+      iconBg: '#E0E7FF',
+      iconColor: '#1D4ED8',
+      valueColor: '#111827',
+    },
   },
   {
     label: 'Wins',
     value: TEAM_HISTORY.totals.wins,
-    icon: 'military-tech',
+    icon: 'emoji-events',
+    accent: {
+      gradient: ['#FFF9E6', '#FFEAC2'],
+      iconBg: '#FEF3C7',
+      iconColor: '#D97706',
+      valueColor: '#92400E',
+    },
   },
   {
     label: 'Draws',
     value: TEAM_HISTORY.totals.draws,
     icon: 'handshake',
+    accent: {
+      gradient: ['#F7F7FF', '#ECECFF'],
+      iconBg: '#E0E7FF',
+      iconColor: '#4338CA',
+      valueColor: '#312E81',
+    },
   },
   {
     label: 'Goals Scored',
     value: TEAM_STATS.goalsScored,
     icon: 'sports-soccer',
+    accent: {
+      gradient: ['#FFF5F5', '#FFE5E5'],
+      iconBg: '#FECACA',
+      iconColor: '#B91C1C',
+      valueColor: '#991B1B',
+    },
   },
   {
     label: 'Goals Allowed',
     value: TEAM_STATS.goalsAllowed,
     icon: 'shield',
+    accent: {
+      gradient: ['#F5F3FF', '#EDE9FE'],
+      iconBg: '#DDD6FE',
+      iconColor: '#6D28D9',
+      valueColor: '#4C1D95',
+    },
   },
   {
     label: 'Clean Sheets',
     value: TEAM_STATS.cleanSheets,
     icon: 'cleaning-services',
+    accent: {
+      gradient: ['#F0FDF4', '#DCFCE7'],
+      iconBg: '#BBF7D0',
+      iconColor: '#15803D',
+      valueColor: '#166534',
+    },
+  },
+  {
+    label: 'Win Percentage',
+    value: winPercentage,
+    icon: 'trending-up',
+    accent: {
+      gradient: ['#ECFEFF', '#CFFAFE'],
+      iconBg: '#BAE6FD',
+      iconColor: '#0284C7',
+      valueColor: '#075985',
+    },
+  },
+  {
+    label: 'Non-Loss Percentage',
+    value: nonLossPercentage,
+    icon: 'check-circle',
+    accent: {
+      gradient: ['#FFF1F2', '#FFE4E6'],
+      iconBg: '#FADCDC',
+      iconColor: '#DB2777',
+      valueColor: '#9D174D',
+    },
   },
 ];
+
+const SEASON_PLACEMENTS = {
+  'spring-2025-lijsl': 1,
+  'fall-2024-lijsl': 3,
+};
+
+const PLACEMENT_LABELS = {
+  1: '1st Place Finish',
+  2: '2nd Place Finish',
+  3: '3rd Place Finish',
+};
+
+const MedalIcon = ({ place = 1, size = 20 }) => {
+  const palette =
+    {
+      1: { fill: '#F4C542', border: '#D4A02B', text: '#FFFFFF' },
+      2: { fill: '#C0C0C8', border: '#A0A0B0', text: '#1F2933' },
+      3: { fill: '#C4702A', border: '#9C541A', text: '#FFF4E0' },
+    }[place] || { fill: '#F4C542', border: '#D4A02B', text: '#FFFFFF' };
+
+  const ribbonColors = ['#1F3C88', '#FFFFFF', '#E31B23'];
+  const ribbonWidth = Math.max(2, size / 6);
+  const ribbonHeight = Math.max(6, size / 2.5);
+
+  return (
+    <View style={{ alignItems: 'center', marginRight: SPACING.xs }}>
+      <View style={{ flexDirection: 'row', marginBottom: size * 0.1 }}>
+        {ribbonColors.map((color, idx) => (
+          <View key={`${place}-ribbon-${idx}`} style={{ width: ribbonWidth, height: ribbonHeight, backgroundColor: color }} />
+        ))}
+      </View>
+      <View
+        style={{
+          width: size,
+          height: size,
+          borderRadius: size / 2,
+          backgroundColor: palette.fill,
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderWidth: 1,
+          borderColor: palette.border,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 1 },
+          shadowOpacity: 0.2,
+          shadowRadius: 2,
+          elevation: 2,
+        }}
+      >
+        <Text
+          style={{
+            fontSize: size * 0.5,
+            fontWeight: TYPOGRAPHY.weights.bold,
+            color: palette.text,
+          }}
+        >
+          {place}
+        </Text>
+      </View>
+    </View>
+  );
+};
 
 const PlayerCard = ({ index }) => {
   const initials = `#${String(index + 1).padStart(2, '0')}`;
@@ -96,52 +223,63 @@ const PlayerCard = ({ index }) => {
   );
 };
 
-const StatCard = ({ label, value, icon }) => (
-  <View
-    style={{
-      flex: 1,
-      minWidth: isDesktop() ? '30%' : '45%',
-      backgroundColor: COLORS.background.main,
-      borderRadius: BORDER_RADIUS.lg,
-      padding: SPACING.lg,
-      marginBottom: SPACING.md,
-      marginRight: SPACING.md,
-      ...SHADOWS.small,
-    }}
-  >
-    <View
+const StatCard = ({ label, value, icon, accent = {} }) => {
+  const {
+    gradient = ['#FFFFFF', '#F5F5F5'],
+    iconBg = COLORS.background.secondary,
+    iconColor = COLORS.primary,
+    valueColor = COLORS.text.primary,
+  } = accent;
+
+  return (
+    <LinearGradient
+      colors={gradient}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
       style={{
-        width: 40,
-        height: 40,
-        borderRadius: BORDER_RADIUS.round,
-        backgroundColor: COLORS.primary + '15',
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginBottom: SPACING.sm,
+        flex: 1,
+        minWidth: isDesktop() ? '30%' : '45%',
+        borderRadius: BORDER_RADIUS.lg,
+        padding: SPACING.lg,
+        marginBottom: SPACING.md,
+        marginRight: SPACING.md,
+        ...SHADOWS.small,
       }}
     >
-      <MaterialIcons name={icon} size={20} color={COLORS.primary} />
-    </View>
-    <Text
-      style={{
-        fontSize: TYPOGRAPHY.sizes.xxxl,
-        fontWeight: TYPOGRAPHY.weights.bold,
-        color: COLORS.primary,
-      }}
-    >
-      {value}
-    </Text>
-    <Text
-      style={{
-        fontSize: TYPOGRAPHY.sizes.md,
-        color: COLORS.text.secondary,
-        marginTop: SPACING.xs,
-      }}
-    >
-      {label}
-    </Text>
-  </View>
-);
+      <View
+        style={{
+          width: 44,
+          height: 44,
+          borderRadius: BORDER_RADIUS.round,
+          backgroundColor: iconBg,
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginBottom: SPACING.sm,
+        }}
+      >
+        <MaterialIcons name={icon} size={22} color={iconColor} />
+      </View>
+      <Text
+        style={{
+          fontSize: TYPOGRAPHY.sizes.xxxl,
+          fontWeight: TYPOGRAPHY.weights.bold,
+          color: valueColor,
+        }}
+      >
+        {value}
+      </Text>
+      <Text
+        style={{
+          fontSize: TYPOGRAPHY.sizes.md,
+          color: COLORS.text.secondary,
+          marginTop: SPACING.xs,
+        }}
+      >
+        {label}
+      </Text>
+    </LinearGradient>
+  );
+};
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const MONTH_NAMES_FULL = [
@@ -224,6 +362,13 @@ const ResultBadge = ({ result, scoreline }) => {
     D: { bg: COLORS.neutralLight + '30', text: COLORS.neutralDark },
   }[result] || { bg: COLORS.neutralLight + '30', text: COLORS.neutralDark };
 
+  const iconName =
+    {
+      W: 'emoji-events',
+      L: 'highlight-off',
+      D: 'remove',
+    }[result] || null;
+
   return (
     <View
       style={{
@@ -231,8 +376,14 @@ const ResultBadge = ({ result, scoreline }) => {
         paddingHorizontal: SPACING.sm,
         paddingVertical: 4,
         borderRadius: BORDER_RADIUS.round,
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: SPACING.xs,
       }}
     >
+      {iconName ? (
+        <MaterialIcons name={iconName} size={16} color={palette.text} />
+      ) : null}
       <Text
         style={{
           color: palette.text,
@@ -324,16 +475,62 @@ const GameRow = ({ game }) => {
 
 const SeasonCard = ({ season }) => {
   const { record = { wins: 0, draws: 0, losses: 0, goalsFor: 0, goalsAgainst: 0 } } = season;
+  const isChampSeason = season.id === 'spring-2025-lijsl';
+  const placement = SEASON_PLACEMENTS[season.id];
+  const gradientColors = isChampSeason ? ['#FFF7EF', '#FFEFEA'] : ['#F9FBFF', '#FFFFFF'];
+  const championBadges = isChampSeason
+    ? [
+        { label: 'Division Champions', color: COLORS.primary },
+        { label: 'Undefeated Season', color: '#059669' },
+      ]
+    : [];
+
   return (
-    <View
+    <LinearGradient
+      colors={gradientColors}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
       style={{
-        backgroundColor: COLORS.background.main,
         borderRadius: BORDER_RADIUS.xl,
         padding: SPACING.lg,
         marginBottom: SPACING.lg,
         ...SHADOWS.small,
+        position: 'relative',
       }}
     >
+      {isChampSeason && (
+        <View
+          style={{
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            gap: SPACING.xs,
+            marginBottom: SPACING.sm,
+          }}
+        >
+          {championBadges.map((badge) => (
+            <View
+              key={badge.label}
+              style={{
+                backgroundColor: badge.color,
+                paddingHorizontal: SPACING.md,
+                paddingVertical: 4,
+                borderRadius: BORDER_RADIUS.round,
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: TYPOGRAPHY.sizes.sm,
+                  fontWeight: TYPOGRAPHY.weights.bold,
+                  color: COLORS.text.white,
+                  letterSpacing: 0.5,
+                }}
+              >
+                {badge.label}
+              </Text>
+            </View>
+          ))}
+        </View>
+      )}
       <View
         style={{
           flexDirection: isDesktop() ? 'row' : 'column',
@@ -370,7 +567,7 @@ const SeasonCard = ({ season }) => {
               color: COLORS.primary,
             }}
           >
-            Record: {record.wins}-{record.draws}-{record.losses}
+            Record (W-D-L): {record.wins}-{record.draws}-{record.losses}
           </Text>
           <Text
             style={{
@@ -383,28 +580,81 @@ const SeasonCard = ({ season }) => {
           </Text>
         </View>
       </View>
+      {placement && (
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: SPACING.xs,
+            marginBottom: SPACING.sm,
+            flexWrap: 'wrap',
+          }}
+        >
+          {Array.from({ length: isChampSeason ? 3 : 1 }).map((_, idx) => (
+            <MedalIcon
+              key={`${season.id}-medal-${idx}`}
+              place={placement}
+              size={isChampSeason ? 16 : 20}
+            />
+          ))}
+          <Text
+            style={{
+              fontSize: TYPOGRAPHY.sizes.sm,
+              fontWeight: TYPOGRAPHY.weights.semibold,
+              color: isChampSeason ? COLORS.primary : COLORS.text.secondary,
+            }}
+          >
+            {isChampSeason ? 'Undefeated Division 6 Champions' : PLACEMENT_LABELS[placement] || 'Top Finish'}
+          </Text>
+        </View>
+      )}
       {season.games.map((game) => (
         <GameRow
           key={`${season.id}-${game.date}-${game.kickoff}-${game.opponent}`}
           game={game}
         />
       ))}
-    </View>
+    </LinearGradient>
   );
 };
 
-const groupEventsByDate = (matches = []) =>
-  matches.reduce((acc, match) => {
-    if (!match?.date) return acc;
-    if (!acc[match.date]) acc[match.date] = [];
+const buildCalendarEvents = (matches = [], practices = []) => {
+  const matchEvents = matches.map((match, index) => {
+    const hasScore =
+      typeof match?.score?.hawks === 'number' && typeof match?.score?.opponent === 'number';
+    const scoreline = hasScore ? `${match.score.hawks}-${match.score.opponent}` : '';
 
-    acc[match.date].push({
-      id: `${match.seasonId}-${match.date}-${match.opponent}-${acc[match.date].length}`,
+    return {
+      id: `${match.seasonId}-${match.date}-${match.opponent}-${index}`,
+      date: match.date,
       title: `${match.isHome ? 'vs' : '@'} ${match.opponent}`,
       details: `${match.kickoff || 'TBD'} · ${match.location}`,
       seasonLabel: match.seasonName,
-    });
+      type: 'game',
+      result: match.result,
+      scoreline,
+      isPlayed: Boolean(scoreline || match.result),
+    };
+  });
 
+  const practiceEvents = practices.map((session, index) => ({
+    id: `practice-${session.date}-${index}`,
+    date: session.date,
+    title: session.title || 'Indoor Practice',
+    details: `${session.time} · ${session.location}`,
+    seasonLabel: session.address || 'Indoor Training',
+    type: 'practice',
+  }));
+
+  return [...matchEvents, ...practiceEvents];
+};
+
+const groupEventsByDate = (events = []) =>
+  events.reduce((acc, event) => {
+    if (!event?.date) return acc;
+    if (!acc[event.date]) acc[event.date] = [];
+
+    acc[event.date].push(event);
     return acc;
   }, {});
 
@@ -431,43 +681,119 @@ const CalendarDay = ({ day, events }) => (
       >
         {day.display}
       </Text>
-      {events?.map((event) => (
-        <View
-          key={event.id}
-          style={{
-            backgroundColor: COLORS.primary + '10',
-            borderRadius: BORDER_RADIUS.sm,
-            paddingHorizontal: SPACING.xs,
-            paddingVertical: 4,
-          }}
-        >
-          <Text
+      {events?.map((event) => {
+        const palette = (() => {
+          if (event.type === 'practice') {
+            return {
+              bg: '#10B98120',
+              border: '#10B98140',
+              title: '#0F9D58',
+              icon: 'event-available',
+              resultColor: '#0F9D58',
+            };
+          }
+
+          if (event.type === 'game' && event.isPlayed) {
+            switch (event.result) {
+              case 'W':
+                return {
+                  bg: '#DCFCE7',
+                  border: '#86EFAC',
+                  title: '#166534',
+                  icon: 'emoji-events',
+                  resultColor: '#0F9D58',
+                };
+              case 'L':
+                return {
+                  bg: '#FEE2E2',
+                  border: '#FECACA',
+                  title: '#B91C1C',
+                  icon: 'report',
+                  resultColor: '#B91C1C',
+                };
+              case 'D':
+                return {
+                  bg: '#F3F4F6',
+                  border: '#E5E7EB',
+                  title: '#374151',
+                  icon: 'remove-circle-outline',
+                  resultColor: '#374151',
+                };
+              default:
+                return {
+                  bg: '#E0F2FE',
+                  border: '#BAE6FD',
+                  title: COLORS.primary,
+                  icon: 'sports-soccer',
+                  resultColor: COLORS.primary,
+                };
+            }
+          }
+
+          return {
+            bg: '#FEF9C3',
+            border: '#FDE68A',
+            title: '#92400E',
+            icon: 'schedule',
+            resultColor: '#92400E',
+          };
+        })();
+
+        return (
+          <View
+            key={event.id}
             style={{
-              fontSize: TYPOGRAPHY.sizes.xs,
-              fontWeight: TYPOGRAPHY.weights.semibold,
-              color: COLORS.primary,
+              backgroundColor: palette.bg,
+              borderRadius: BORDER_RADIUS.sm,
+              paddingHorizontal: SPACING.xs,
+              paddingVertical: 4,
+              borderWidth: 1,
+              borderColor: palette.border,
+              gap: 2,
             }}
           >
-            {event.title}
-          </Text>
-          <Text
-            style={{
-              fontSize: TYPOGRAPHY.sizes.xs,
-              color: COLORS.text.secondary,
-            }}
-          >
-            {event.details}
-          </Text>
-          <Text
-            style={{
-              fontSize: TYPOGRAPHY.sizes.xs,
-              color: COLORS.text.secondary,
-            }}
-          >
-            {event.seasonLabel}
-          </Text>
-        </View>
-      ))}
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+              <MaterialIcons name={palette.icon} size={12} color={palette.title} />
+              <Text
+                style={{
+                  fontSize: TYPOGRAPHY.sizes.xs,
+                  fontWeight: TYPOGRAPHY.weights.semibold,
+                  color: palette.title,
+                }}
+              >
+                {event.title}
+              </Text>
+            </View>
+            <Text
+              style={{
+                fontSize: TYPOGRAPHY.sizes.xs,
+                color: COLORS.text.secondary,
+              }}
+            >
+              {event.details}
+            </Text>
+            <Text
+              style={{
+                fontSize: TYPOGRAPHY.sizes.xs,
+                color: COLORS.text.secondary,
+              }}
+            >
+              {event.seasonLabel}
+            </Text>
+            {event.type === 'game' && event.isPlayed && event.scoreline ? (
+              <Text
+                style={{
+                  fontSize: TYPOGRAPHY.sizes.xs,
+                  fontWeight: TYPOGRAPHY.weights.semibold,
+                  color: palette.resultColor,
+                }}
+              >
+                {event.result ? `${event.result} · ${event.scoreline}` : event.scoreline}
+              </Text>
+            ) : null}
+          </View>
+        );
+      })}
     </View>
   </View>
 );
@@ -535,7 +861,8 @@ const StandingsHeader = () => (
 );
 
 const StandingsRow = ({ entry }) => {
-  const isHawks = (entry.team || '').toLowerCase().includes('hawks');
+  const normalizedTeam = (entry.team || '').toLowerCase();
+  const isHawks = normalizedTeam.includes('smithtown hawks');
   const record =
     entry.record || {
       wins: 0,
@@ -647,7 +974,11 @@ const StandingsCard = ({ table }) => (
 export default function TeamSection() {
   const promotionPulse = useRef(new Animated.Value(0)).current;
   const allMatches = useMemo(() => getAllMatches(), []);
-  const eventsByDate = useMemo(() => groupEventsByDate(allMatches), [allMatches]);
+  const calendarEvents = useMemo(
+    () => buildCalendarEvents(allMatches, INDOOR_PRACTICE_SCHEDULE),
+    [allMatches]
+  );
+  const eventsByDate = useMemo(() => groupEventsByDate(calendarEvents), [calendarEvents]);
   const [calendarMonth, setCalendarMonth] = useState(INITIAL_CALENDAR_DATE);
   const calendarDays = useMemo(() => buildCalendarDays(calendarMonth), [calendarMonth]);
   const monthLabel = `${MONTH_NAMES_FULL[calendarMonth.getMonth()]} ${calendarMonth.getFullYear()}`;

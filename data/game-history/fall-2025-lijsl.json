@@ -8,6 +8,18 @@
   "team": "Smithtown Hawks",
   "games": [
     {
+      "date": "2025-11-15",
+      "day": "Sat",
+      "kickoff": "11:00 AM",
+      "location": "Moriches Soccer Park 1",
+      "isHome": true,
+      "opponentClub": "MANORVILLE (LIJSL)",
+      "opponent": "Arsenal",
+      "score": null,
+      "result": null,
+      "notes": "Upcoming league match vs Manorville Arsenal"
+    },
+    {
       "date": "2025-11-01",
       "day": "Sat",
       "kickoff": "3:00 PM",
