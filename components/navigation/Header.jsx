@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { View, Text, TouchableOpacity, Image } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter, usePathname, useLocalSearchParams } from 'expo-router';
 import { COLORS, SHADOWS, SPACING } from '../../constants/design-system';
 import { NAVIGATION_ITEMS } from '../../constants/navigation';
@@ -20,7 +19,8 @@ export default function Header() {
   const router = useRouter();
   const pathname = usePathname();
   const { page } = useLocalSearchParams();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const mobileView = isMobile();
+  const desktopView = isDesktop();
 
   const derivedSlug = React.useMemo(() => {
     if (pathname === '/') {
@@ -33,10 +33,10 @@ export default function Header() {
 
   const handleNavigation = (slug) => {
     navigateToSlug(router, slug);
-    setMobileMenuOpen(false);
   };
 
   const isActive = (slug) => derivedSlug === slug;
+  const logoSize = mobileView ? 40 : 56;
 
   return (
     <View style={{ 
@@ -48,86 +48,45 @@ export default function Header() {
       <Container>
         <View style={{
           flexDirection: 'row',
-          justifyContent: 'center',
           alignItems: 'center',
           paddingVertical: SPACING.md,
           minHeight: 60
         }}>
+          {/* Hawks Icon */}
+          <Image
+            source={require('../../assets/favicon.png')}
+            style={{
+              width: logoSize,
+              height: logoSize,
+              borderRadius: logoSize / 2,
+              borderWidth: 0,
+              borderColor: COLORS.primary,
+              marginRight: SPACING.md
+            }}
+            resizeMode="contain"
+          />
 
-          {/* Desktop Navigation */}
-          {isDesktop() && (
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              {NAVIGATION_ITEMS.map((item) => (
-                <TouchableOpacity
-                  key={item.name}
-                  onPress={() => handleNavigation(item.slug)}
-                  style={{
-                    paddingHorizontal: SPACING.md,
-                    paddingVertical: SPACING.sm,
-                    marginHorizontal: SPACING.xs,
-                    borderRadius: 8,
-                    backgroundColor: isActive(item.slug) ? COLORS.primary : 'transparent'
-                  }}
-                >
-                  <Text style={{
-                    fontSize: 16,
-                    fontWeight: isActive(item.slug) ? '700' : '500',
-                    color: isActive(item.slug) ? COLORS.text.white : COLORS.text.primary
-                  }}>
-                    {item.name}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          )}
-
-          {/* Mobile Menu Button */}
-          {isMobile() && (
-            <TouchableOpacity 
-              onPress={() => setMobileMenuOpen(!mobileMenuOpen)}
-              style={{
-                padding: SPACING.sm,
-                borderRadius: 8,
-                backgroundColor: mobileMenuOpen ? COLORS.background.tertiary : 'transparent'
-              }}
-            >
-              <MaterialIcons 
-                name={mobileMenuOpen ? 'close' : 'menu'} 
-                size={24} 
-                color={COLORS.primary} 
-              />
-            </TouchableOpacity>
-          )}
-        </View>
-
-        {/* Mobile Menu */}
-        {isMobile() && mobileMenuOpen && (
+          {/* Primary Navigation */}
           <View style={{
-            paddingBottom: SPACING.md,
-            borderTopWidth: 1,
-            borderTopColor: COLORS.background.tertiary,
-            marginTop: SPACING.sm
+            flex: 1,
+            flexDirection: 'row',
+            flexWrap: mobileView ? 'wrap' : 'nowrap',
+            justifyContent: desktopView ? 'center' : 'flex-start',
+            alignItems: 'center'
           }}>
             {NAVIGATION_ITEMS.map((item) => (
               <TouchableOpacity
                 key={item.name}
                 onPress={() => handleNavigation(item.slug)}
                 style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  paddingVertical: SPACING.md,
-                  paddingHorizontal: SPACING.sm,
+                  paddingHorizontal: mobileView ? SPACING.sm : SPACING.md,
+                  paddingVertical: SPACING.sm,
+                  marginRight: SPACING.xs,
+                  marginBottom: mobileView ? SPACING.xs : 0,
                   borderRadius: 8,
-                  marginVertical: 2,
                   backgroundColor: isActive(item.slug) ? COLORS.primary : 'transparent'
                 }}
               >
-                <MaterialIcons 
-                  name={item.icon} 
-                  size={20} 
-                  color={isActive(item.slug) ? COLORS.text.white : COLORS.text.secondary}
-                  style={{ marginRight: SPACING.sm }}
-                />
                 <Text style={{
                   fontSize: 16,
                   fontWeight: isActive(item.slug) ? '700' : '500',
@@ -138,7 +97,7 @@ export default function Header() {
               </TouchableOpacity>
             ))}
           </View>
-        )}
+        </View>
       </Container>
     </View>
   );

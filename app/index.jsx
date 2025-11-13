@@ -237,16 +237,6 @@ export default function CarouselApp() {
   const { page } = useLocalSearchParams();
   const router = useRouter();
 
-  const handleIndexChange = useCallback((index) => {
-    setCurrentIndex(index);
-    const slug = PAGES[index].slug;
-    if (slug === 'home') {
-      router.replace('/');
-    } else {
-      router.replace({ pathname: '/', params: { page: slug } });
-    }
-  }, [router]);
-
   useEffect(() => {
     const slugParam = Array.isArray(page) ? page[0] : page;
     const targetIndex = getIndexFromSlug(slugParam);
