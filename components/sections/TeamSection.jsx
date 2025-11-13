@@ -1206,13 +1206,14 @@ export default function TeamSection() {
               marginBottom: SPACING.lg,
             }}
           >
-            Recent LIJSL tables showing the Hawks climbing from Division 7E to Division 4E without relying on a database.
+            Recent LIJSL tables showing the Hawks climbing from Division 7E to Division 4E.
           </Text>
           {STANDINGS.map((table) => (
             <StandingsCard key={table.id} table={table} />
           ))}
         </View>
 
+        {/* Roster Section 
         <View>
           <Text
             style={{
@@ -1236,7 +1237,7 @@ export default function TeamSection() {
             ))}
           </View>
         </View>
-
+        */}
         <View>
           <Text
             style={{
@@ -1248,15 +1249,7 @@ export default function TeamSection() {
           >
             Game History
           </Text>
-          <Text
-            style={{
-              fontSize: TYPOGRAPHY.sizes.md,
-              color: COLORS.text.secondary,
-              marginBottom: SPACING.lg,
-            }}
-          >
-            Every match lives in static files so the site stays fast and remains friendly to offline-ready deployments.
-          </Text>
+
           {GAME_HISTORY.map((season) => (
             <SeasonCard key={season.id} season={season} />
           ))}
