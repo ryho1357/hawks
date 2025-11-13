@@ -235,6 +235,7 @@ export default function ParentPortal() {
                 style={{
                   backgroundColor: COLORS.text.secondary + '40',
                   borderColor: 'transparent',
+                  borderRadius: BORDER_RADIUS.round,
                 }}
                 textStyle={{ color: COLORS.text.white }}
               />

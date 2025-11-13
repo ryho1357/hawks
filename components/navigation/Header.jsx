@@ -36,7 +36,7 @@ export default function Header() {
   };
 
   const isActive = (slug) => derivedSlug === slug;
-  const logoSize = mobileView ? 40 : 56;
+  const logoSize = mobileView ? 52 : 72;
 
   return (
     <View style={{ 
