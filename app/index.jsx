@@ -17,6 +17,7 @@ import Hero from './hero';
 import AboutSection from '../components/sections/AboutSection';
 import TeamSection from '../components/sections/TeamSection';
 import ContactSection from '../components/sections/ContactSection';
+import ParentPortal from '../components/sections/ParentPortal';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -24,6 +25,7 @@ const PAGES = [
   { component: Hero, name: 'Home', slug: 'home' },
   { component: AboutSection, name: 'About', slug: 'about' },
   { component: TeamSection, name: 'Team', slug: 'team' },
+  { component: ParentPortal, name: 'Parent Portal', slug: 'portal' },
   { component: ContactSection, name: 'Contact', slug: 'contact' },
 ];
 
