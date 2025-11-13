@@ -97,7 +97,7 @@ export const TEAM_HISTORY = {
     draws: CURRENT_SEASON?.record?.draws ?? DEFAULT_RECORD.draws,
     losses: CURRENT_SEASON?.record?.losses ?? DEFAULT_RECORD.losses,
   },
-  highlight: "Promoted from Division 7 → 6 → 4 in just two years.",
+  highlight: "Promoted from Division 7 → 6 → 4 in under two years. 📈",
 };
 
 // Coaching Philosophy
