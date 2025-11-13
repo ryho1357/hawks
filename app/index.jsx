@@ -8,6 +8,8 @@ import Animated, {
   runOnJS,
   withRepeat,
   withTiming,
+  Easing,
+  withSequence,
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -234,6 +236,7 @@ const SoccerFieldBackground = () => {
 export default function CarouselApp() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const translateX = useSharedValue(0);
+  const transitionOpacity = useSharedValue(1);
   const { page } = useLocalSearchParams();
   const router = useRouter();
 
@@ -241,13 +244,21 @@ export default function CarouselApp() {
     const slugParam = Array.isArray(page) ? page[0] : page;
     const targetIndex = getIndexFromSlug(slugParam);
     if (targetIndex !== currentIndex) {
-      translateX.value = withSpring(-targetIndex * SCREEN_WIDTH);
+      translateX.value = withTiming(-targetIndex * SCREEN_WIDTH, {
+        duration: 450,
+        easing: Easing.out(Easing.cubic),
+      });
+      transitionOpacity.value = withSequence(
+        withTiming(0.9, { duration: 150, easing: Easing.out(Easing.quad) }),
+        withTiming(1, { duration: 300, easing: Easing.out(Easing.cubic) })
+      );
       setCurrentIndex(targetIndex);
     }
-  }, [page, currentIndex, translateX]);
+  }, [page, currentIndex, translateX, transitionOpacity]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: translateX.value }],
+    opacity: transitionOpacity.value,
   }));
 
   return (
