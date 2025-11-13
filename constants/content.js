@@ -165,6 +165,6 @@ export const TEAM_STATS = {
   cleanSheets: AGGREGATE_TOTALS.cleanSheets,
   playerCount: TEAM_ROSTER.length,
   streak: CURRENT_SEASON
-    ? `${CURRENT_SEASON.season} form: ${CURRENT_SEASON.record?.wins ?? 0}-${CURRENT_SEASON.record?.draws ?? 0}-${CURRENT_SEASON.record?.losses ?? 0}`
+    ? `${CURRENT_SEASON.season} form (W-L-D): ${CURRENT_SEASON.record?.wins ?? 0}-${CURRENT_SEASON.record?.losses ?? 0}-${CURRENT_SEASON.record?.draws ?? 0}`
     : "Season loading",
 };

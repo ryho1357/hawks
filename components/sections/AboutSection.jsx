@@ -1,8 +1,9 @@
 import React from 'react';
-import { ScrollView, View, Text } from 'react-native';
+import { ScrollView, View, Text, Image } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS, SPACING, SHADOWS, BORDER_RADIUS, TYPOGRAPHY } from '../../constants/design-system';
-import { CLUB_INFO, TEAM_PILLARS, COACHING_PHILOSOPHY, TEAM_HISTORY } from '../../constants/content';
+import { CLUB_INFO, TEAM_PILLARS, COACHING_PHILOSOPHY } from '../../constants/content';
 import Container from '../ui/Container';
 import { isDesktop } from '../../utils/responsive';
 
@@ -13,15 +14,24 @@ const ICON_MAP = {
   target: 'center-focus-strong',
 };
 
-const PillarCard = ({ pillar }) => {
+const PillarCard = ({ pillar, index }) => {
   const iconName = ICON_MAP[pillar.icon] || 'sports-soccer';
+  const palettes = [
+    { gradient: ['#FFF7ED', '#FFE4E6'], iconBg: '#FED7AA' },
+    { gradient: ['#EEF2FF', '#E0E7FF'], iconBg: '#C7D2FE' },
+    { gradient: ['#ECFCCB', '#DCFCE7'], iconBg: '#A7F3D0' },
+    { gradient: ['#E0F2FE', '#BAE6FD'], iconBg: '#BFDBFE' },
+  ];
+  const palette = palettes[index % palettes.length];
 
   return (
-    <View
+    <LinearGradient
+      colors={palette.gradient}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
       style={{
         flex: 1,
         minWidth: isDesktop() ? '45%' : '100%',
-        backgroundColor: COLORS.background.main,
         borderRadius: BORDER_RADIUS.lg,
         padding: SPACING.lg,
         marginBottom: SPACING.md,
@@ -33,7 +43,7 @@ const PillarCard = ({ pillar }) => {
           width: 44,
           height: 44,
           borderRadius: BORDER_RADIUS.round,
-          backgroundColor: COLORS.primary + '10',
+          backgroundColor: palette.iconBg,
           alignItems: 'center',
           justifyContent: 'center',
           marginBottom: SPACING.md,
@@ -60,7 +70,7 @@ const PillarCard = ({ pillar }) => {
       >
         {pillar.description}
       </Text>
-    </View>
+    </LinearGradient>
   );
 };
 
@@ -133,19 +143,35 @@ export default function AboutSection() {
       showsVerticalScrollIndicator={false}
     >
       <Container style={{ gap: SPACING.xxl }}>
-        <View
+        <LinearGradient
+          colors={['#F35B5B', '#E02424', '#C81414']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
           style={{
-            backgroundColor: COLORS.background.main,
             borderRadius: BORDER_RADIUS.xl,
             padding: SPACING.xxl,
             ...SHADOWS.medium,
+            overflow: 'hidden',
           }}
         >
+          <Image
+            source={require('../../assets/favicon.png')}
+            resizeMode="cover"
+            style={{
+              position: 'absolute',
+              width: '100%',
+              height: '100%',
+              top: 0,
+              left: 0,
+              opacity: 0.05,
+            }}
+            pointerEvents="none"
+          />
           <Text
             style={{
               fontSize: TYPOGRAPHY.sizes.xxxl,
               fontWeight: TYPOGRAPHY.weights.bold,
-              color: COLORS.primary,
+              color: COLORS.text.white,
               marginBottom: SPACING.sm,
               textAlign: 'center',
             }}
@@ -156,7 +182,7 @@ export default function AboutSection() {
             style={{
               fontSize: TYPOGRAPHY.sizes.xl,
               fontWeight: TYPOGRAPHY.weights.semibold,
-              color: COLORS.text.primary,
+              color: COLORS.text.white,
               textAlign: 'center',
               marginBottom: SPACING.md,
             }}
@@ -167,13 +193,13 @@ export default function AboutSection() {
             style={{
               fontSize: TYPOGRAPHY.sizes.lg,
               lineHeight: 24,
-              color: COLORS.text.secondary,
+              color: 'rgba(255,255,255,0.9)',
               textAlign: 'center',
             }}
           >
             {CLUB_INFO.description}
           </Text>
-        </View>
+        </LinearGradient>
 
         <View>
           <Text
@@ -194,50 +220,11 @@ export default function AboutSection() {
               gap: SPACING.md,
             }}
           >
-            {TEAM_PILLARS.map((pillar) => (
-              <PillarCard key={pillar.title} pillar={pillar} />
+            {TEAM_PILLARS.map((pillar, index) => (
+              <PillarCard key={pillar.title} pillar={pillar} index={index} />
             ))}
           </View>
         </View>
-
-        <View
-          style={{
-            backgroundColor: COLORS.primary,
-            borderRadius: BORDER_RADIUS.xl,
-            padding: SPACING.xxl,
-            ...SHADOWS.medium,
-          }}
-        >
-          <Text
-            style={{
-              fontSize: TYPOGRAPHY.sizes.xxl,
-              fontWeight: TYPOGRAPHY.weights.semibold,
-              color: COLORS.text.white,
-              marginBottom: SPACING.sm,
-            }}
-          >
-            Current Season Snapshot
-          </Text>
-          <Text
-            style={{
-              fontSize: TYPOGRAPHY.sizes.lg,
-              color: COLORS.text.white,
-              marginBottom: SPACING.sm,
-            }}
-          >
-            {TEAM_HISTORY.currentSeason.season} · {TEAM_HISTORY.currentSeason.division}
-          </Text>
-          <Text
-            style={{
-              fontSize: TYPOGRAPHY.sizes.md,
-              color: COLORS.text.white,
-              lineHeight: 22,
-            }}
-          >
-            {TEAM_HISTORY.highlight}
-          </Text>
-        </View>
-
         <View>
           <Text
             style={{
@@ -249,9 +236,11 @@ export default function AboutSection() {
           >
             Coaching Philosophy
           </Text>
-          <View
+          <LinearGradient
+            colors={['#F8FBFF', '#EDF7FF']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
             style={{
-              backgroundColor: COLORS.background.main,
               borderRadius: BORDER_RADIUS.xl,
               padding: SPACING.xxl,
               ...SHADOWS.small,
@@ -279,16 +268,18 @@ export default function AboutSection() {
             </Text>
             <View style={{ gap: SPACING.sm }}>
               {COACHING_PHILOSOPHY.values.map((value) => (
-                <View
+                <LinearGradient
                   key={value}
+                  colors={['#FFF7ED', '#FFE4E6']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
                   style={{
                     flexDirection: 'row',
                     alignItems: 'center',
-                    backgroundColor: COLORS.background.secondary,
                     borderRadius: BORDER_RADIUS.lg,
                     padding: SPACING.md,
                     borderWidth: 1,
-                    borderColor: COLORS.background.tertiary,
+                    borderColor: '#FED7AA',
                   }}
                 >
                   <MaterialIcons
@@ -306,10 +297,10 @@ export default function AboutSection() {
                   >
                     {value}
                   </Text>
-                </View>
+                </LinearGradient>
               ))}
             </View>
-          </View>
+          </LinearGradient>
         </View>
 
         <View>

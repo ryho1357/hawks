@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { ScrollView, View, Text, Animated, TouchableOpacity } from 'react-native';
+import { ScrollView, View, Text, Animated, TouchableOpacity, Modal, TouchableWithoutFeedback, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
 import { COLORS, SPACING, SHADOWS, BORDER_RADIUS, TYPOGRAPHY } from '../../constants/design-system';
@@ -355,6 +355,16 @@ const formatDateLabel = (game) => {
   return `${game.day || ''}${game.day ? ' · ' : ''}${MONTHS[monthIdx]} ${Number.isNaN(readableDay) ? day : readableDay}`;
 };
 
+const formatEventDateLabel = (value) => {
+  const date = parseDateString(value);
+  if (!date) {
+    return 'Date TBA';
+  }
+  const weekday = WEEKDAY_LABELS[date.getDay()];
+  const monthName = MONTH_NAMES_FULL[date.getMonth()];
+  return `${weekday} · ${monthName} ${date.getDate()}`;
+};
+
 const ResultBadge = ({ result, scoreline }) => {
   const palette = {
     W: { bg: '#10B98120', text: '#0F9D58' },
@@ -473,7 +483,7 @@ const GameRow = ({ game }) => {
   );
 };
 
-const SeasonCard = ({ season }) => {
+const SeasonCard = ({ season, isExpanded, onToggle }) => {
   const { record = { wins: 0, draws: 0, losses: 0, goalsFor: 0, goalsAgainst: 0 } } = season;
   const isChampSeason = season.id === 'spring-2025-lijsl';
   const placement = SEASON_PLACEMENTS[season.id];
@@ -498,45 +508,13 @@ const SeasonCard = ({ season }) => {
         position: 'relative',
       }}
     >
-      {isChampSeason && (
-        <View
-          style={{
-            flexDirection: 'row',
-            flexWrap: 'wrap',
-            gap: SPACING.xs,
-            marginBottom: SPACING.sm,
-          }}
-        >
-          {championBadges.map((badge) => (
-            <View
-              key={badge.label}
-              style={{
-                backgroundColor: badge.color,
-                paddingHorizontal: SPACING.md,
-                paddingVertical: 4,
-                borderRadius: BORDER_RADIUS.round,
-              }}
-            >
-              <Text
-                style={{
-                  fontSize: TYPOGRAPHY.sizes.sm,
-                  fontWeight: TYPOGRAPHY.weights.bold,
-                  color: COLORS.text.white,
-                  letterSpacing: 0.5,
-                }}
-              >
-                {badge.label}
-              </Text>
-            </View>
-          ))}
-        </View>
-      )}
-      <View
+      <TouchableOpacity
+        onPress={onToggle}
+        activeOpacity={0.9}
         style={{
-          flexDirection: isDesktop() ? 'row' : 'column',
-          justifyContent: 'space-between',
-          gap: SPACING.sm,
-          marginBottom: SPACING.md,
+          flexDirection: 'row',
+          alignItems: 'flex-start',
+          gap: SPACING.md,
         }}
       >
         <View style={{ flex: 1 }}>
@@ -558,8 +536,74 @@ const SeasonCard = ({ season }) => {
           >
             {season.division}
           </Text>
+          {placement && (
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: SPACING.xs,
+                marginTop: SPACING.xs,
+                flexWrap: 'wrap',
+              }}
+            >
+              {Array.from({ length: isChampSeason ? 3 : 1 }).map((_, idx) => (
+                <MedalIcon
+                  key={`${season.id}-header-medal-${idx}`}
+                  place={placement}
+                  size={isChampSeason ? 16 : 20}
+                />
+              ))}
+              <Text
+                style={{
+                  fontSize: TYPOGRAPHY.sizes.sm,
+                  fontWeight: TYPOGRAPHY.weights.semibold,
+                  color: isChampSeason ? COLORS.primary : COLORS.text.secondary,
+                }}
+              >
+                {isChampSeason ? 'Undefeated Division 6 Champions' : PLACEMENT_LABELS[placement] || 'Top Finish'}
+              </Text>
+            </View>
+          )}
+          {championBadges.length ? (
+            <View
+              style={{
+                flexDirection: 'row',
+                flexWrap: 'wrap',
+                gap: SPACING.xs,
+                marginTop: SPACING.xs,
+              }}
+            >
+              {championBadges.map((badge) => (
+                <View
+                  key={`header-${badge.label}`}
+                  style={{
+                    backgroundColor: badge.color,
+                    paddingHorizontal: SPACING.md,
+                    paddingVertical: 4,
+                    borderRadius: BORDER_RADIUS.round,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: TYPOGRAPHY.sizes.xs,
+                      fontWeight: TYPOGRAPHY.weights.semibold,
+                      color: COLORS.text.white,
+                      letterSpacing: 0.5,
+                    }}
+                  >
+                    {badge.label}
+                  </Text>
+                </View>
+              ))}
+            </View>
+          ) : null}
         </View>
-        <View style={{ alignItems: isDesktop() ? 'flex-end' : 'flex-start' }}>
+        <View
+          style={{
+            alignItems: 'flex-end',
+            minWidth: isDesktop() ? 200 : undefined,
+          }}
+        >
           <Text
             style={{
               fontSize: TYPOGRAPHY.sizes.lg,
@@ -567,7 +611,7 @@ const SeasonCard = ({ season }) => {
               color: COLORS.primary,
             }}
           >
-            Record (W-D-L): {record.wins}-{record.draws}-{record.losses}
+            Record (W-L-D): {record.wins}-{record.losses}-{record.draws}
           </Text>
           <Text
             style={{
@@ -579,41 +623,24 @@ const SeasonCard = ({ season }) => {
             Goals · {record.goalsFor} for / {record.goalsAgainst} against
           </Text>
         </View>
-      </View>
-      {placement && (
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: SPACING.xs,
-            marginBottom: SPACING.sm,
-            flexWrap: 'wrap',
-          }}
-        >
-          {Array.from({ length: isChampSeason ? 3 : 1 }).map((_, idx) => (
-            <MedalIcon
-              key={`${season.id}-medal-${idx}`}
-              place={placement}
-              size={isChampSeason ? 16 : 20}
+        <MaterialIcons
+          name={isExpanded ? 'expand-less' : 'expand-more'}
+          size={24}
+          color={COLORS.text.primary}
+          style={{ marginTop: 2 }}
+        />
+      </TouchableOpacity>
+
+      {isExpanded && (
+        <View style={{ marginTop: SPACING.lg }}>
+          {season.games.map((game) => (
+            <GameRow
+              key={`${season.id}-${game.date}-${game.kickoff}-${game.opponent}`}
+              game={game}
             />
           ))}
-          <Text
-            style={{
-              fontSize: TYPOGRAPHY.sizes.sm,
-              fontWeight: TYPOGRAPHY.weights.semibold,
-              color: isChampSeason ? COLORS.primary : COLORS.text.secondary,
-            }}
-          >
-            {isChampSeason ? 'Undefeated Division 6 Champions' : PLACEMENT_LABELS[placement] || 'Top Finish'}
-          </Text>
         </View>
       )}
-      {season.games.map((game) => (
-        <GameRow
-          key={`${season.id}-${game.date}-${game.kickoff}-${game.opponent}`}
-          game={game}
-        />
-      ))}
     </LinearGradient>
   );
 };
@@ -634,6 +661,9 @@ const buildCalendarEvents = (matches = [], practices = []) => {
       result: match.result,
       scoreline,
       isPlayed: Boolean(scoreline || match.result),
+      time: match?.kickoff || 'Time TBD',
+      location: match?.location || 'Location TBD',
+      note: match?.notes || '',
     };
   });
 
@@ -644,6 +674,9 @@ const buildCalendarEvents = (matches = [], practices = []) => {
     details: `${session.time} · ${session.location}`,
     seasonLabel: session.address || 'Indoor Training',
     type: 'practice',
+    time: session?.time || 'Time TBD',
+    location: session?.location || 'Location TBD',
+    note: session?.address || '',
   }));
 
   return [...matchEvents, ...practiceEvents];
@@ -658,7 +691,74 @@ const groupEventsByDate = (events = []) =>
     return acc;
   }, {});
 
-const CalendarDay = ({ day, events }) => (
+const getEventPalette = (event) => {
+  if (!event) {
+    return {
+      bg: COLORS.background.secondary,
+      border: COLORS.background.tertiary,
+      title: COLORS.text.primary,
+      icon: 'event',
+      resultColor: COLORS.text.secondary,
+    };
+  }
+
+  if (event.type === 'practice') {
+    return {
+      bg: '#10B98120',
+      border: '#10B98140',
+      title: '#0F9D58',
+      icon: 'event-available',
+      resultColor: '#0F9D58',
+    };
+  }
+
+  if (event.type === 'game' && event.isPlayed) {
+    switch (event.result) {
+      case 'W':
+        return {
+          bg: '#DCFCE7',
+          border: '#86EFAC',
+          title: '#166534',
+          icon: 'emoji-events',
+          resultColor: '#0F9D58',
+        };
+      case 'L':
+        return {
+          bg: '#FEE2E2',
+          border: '#FECACA',
+          title: '#B91C1C',
+          icon: 'report',
+          resultColor: '#B91C1C',
+        };
+      case 'D':
+        return {
+          bg: '#F3F4F6',
+          border: '#E5E7EB',
+          title: '#374151',
+          icon: 'remove-circle-outline',
+          resultColor: '#374151',
+        };
+      default:
+        return {
+          bg: '#E0F2FE',
+          border: '#BAE6FD',
+          title: COLORS.primary,
+          icon: 'sports-soccer',
+          resultColor: COLORS.primary,
+        };
+    }
+  }
+
+  return {
+    bg: '#FEF9C3',
+    border: '#FDE68A',
+    title: '#92400E',
+    icon: 'schedule',
+    resultColor: '#92400E',
+  };
+};
+
+const CalendarDay = ({ day, events, onEventPress }) => (
   <View style={{ width: `${100 / 7}%`, padding: 4 }}>
     <View
       style={{
@@ -682,66 +782,12 @@ const CalendarDay = ({ day, events }) => (
         {day.display}
       </Text>
       {events?.map((event) => {
-        const palette = (() => {
-          if (event.type === 'practice') {
-            return {
-              bg: '#10B98120',
-              border: '#10B98140',
-              title: '#0F9D58',
-              icon: 'event-available',
-              resultColor: '#0F9D58',
-            };
-          }
-
-          if (event.type === 'game' && event.isPlayed) {
-            switch (event.result) {
-              case 'W':
-                return {
-                  bg: '#DCFCE7',
-                  border: '#86EFAC',
-                  title: '#166534',
-                  icon: 'emoji-events',
-                  resultColor: '#0F9D58',
-                };
-              case 'L':
-                return {
-                  bg: '#FEE2E2',
-                  border: '#FECACA',
-                  title: '#B91C1C',
-                  icon: 'report',
-                  resultColor: '#B91C1C',
-                };
-              case 'D':
-                return {
-                  bg: '#F3F4F6',
-                  border: '#E5E7EB',
-                  title: '#374151',
-                  icon: 'remove-circle-outline',
-                  resultColor: '#374151',
-                };
-              default:
-                return {
-                  bg: '#E0F2FE',
-                  border: '#BAE6FD',
-                  title: COLORS.primary,
-                  icon: 'sports-soccer',
-                  resultColor: COLORS.primary,
-                };
-            }
-          }
-
-          return {
-            bg: '#FEF9C3',
-            border: '#FDE68A',
-            title: '#92400E',
-            icon: 'schedule',
-            resultColor: '#92400E',
-          };
-        })();
-
+        const palette = getEventPalette(event);
         return (
-          <View
+          <TouchableOpacity
             key={event.id}
+            onPress={() => onEventPress?.(event)}
+            activeOpacity={0.9}
             style={{
               backgroundColor: palette.bg,
               borderRadius: BORDER_RADIUS.sm,
@@ -791,12 +837,214 @@ const CalendarDay = ({ day, events }) => (
                 {event.result ? `${event.result} · ${event.scoreline}` : event.scoreline}
               </Text>
             ) : null}
-          </View>
+          </TouchableOpacity>
         );
       })}
     </View>
   </View>
 );
+
+const EventDetailModal = ({ event, onClose }) => {
+  if (!event) return null;
+
+  const palette = getEventPalette(event);
+  const dateLabel = formatEventDateLabel(event.date);
+  const badgeLabel =
+    event.type === 'practice'
+      ? 'Training Session'
+      : event.isPlayed
+      ? 'Final Result'
+      : 'Match Day';
+
+  const resultLabel =
+    event.type === 'game' && event.isPlayed && event.scoreline
+      ? `${event.scoreline}${event.result ? ` · ${event.result}` : ''}`
+      : null;
+
+  const infoRows = [
+    { icon: 'schedule', label: 'Time', value: event.time || 'Time TBD' },
+    { icon: 'place', label: 'Location', value: event.location || 'Location TBD' },
+  ];
+
+  return (
+    <Modal visible transparent animationType="fade">
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: 'rgba(0,0,0,0.35)',
+          justifyContent: 'flex-end',
+        }}
+      >
+        <TouchableWithoutFeedback onPress={onClose}>
+          <View
+            style={{
+              position: 'absolute',
+              top: 0,
+              bottom: 0,
+              left: 0,
+              right: 0,
+            }}
+          />
+        </TouchableWithoutFeedback>
+        <View
+          style={{
+            backgroundColor: COLORS.background.main,
+            borderTopLeftRadius: BORDER_RADIUS.xxl,
+            borderTopRightRadius: BORDER_RADIUS.xxl,
+            padding: SPACING.xl,
+            gap: SPACING.md,
+            ...SHADOWS.large,
+          }}
+        >
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}
+          >
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: SPACING.sm,
+              }}
+            >
+              <View
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: BORDER_RADIUS.round,
+                  backgroundColor: palette.bg,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderWidth: 1,
+                  borderColor: palette.border,
+                }}
+              >
+                <MaterialIcons name={palette.icon} size={20} color={palette.title} />
+              </View>
+              <View>
+                <Text
+                  style={{
+                    fontSize: TYPOGRAPHY.sizes.xs,
+                    fontWeight: TYPOGRAPHY.weights.semibold,
+                    color: palette.title,
+                    letterSpacing: 1,
+                  }}
+                >
+                  {badgeLabel}
+                </Text>
+                <Text
+                  style={{
+                    fontSize: TYPOGRAPHY.sizes.md,
+                    color: COLORS.text.secondary,
+                  }}
+                >
+                  {dateLabel}
+                </Text>
+              </View>
+            </View>
+            <TouchableOpacity onPress={onClose}>
+              <MaterialIcons name="close" size={20} color={COLORS.text.secondary} />
+            </TouchableOpacity>
+          </View>
+
+          <View style={{ gap: 4 }}>
+            <Text
+              style={{
+                fontSize: TYPOGRAPHY.sizes.xxl,
+                fontWeight: TYPOGRAPHY.weights.semibold,
+                color: COLORS.text.primary,
+              }}
+            >
+              {event.title}
+            </Text>
+            {event.seasonLabel ? (
+              <Text
+                style={{
+                  fontSize: TYPOGRAPHY.sizes.md,
+                  color: COLORS.text.secondary,
+                }}
+              >
+                {event.seasonLabel}
+              </Text>
+            ) : null}
+            {resultLabel ? (
+              <Text
+                style={{
+                  fontSize: TYPOGRAPHY.sizes.md,
+                  fontWeight: TYPOGRAPHY.weights.semibold,
+                  color: palette.resultColor,
+                }}
+              >
+                {resultLabel}
+              </Text>
+            ) : null}
+          </View>
+
+          <View style={{ gap: SPACING.sm }}>
+            {infoRows.map((row) => (
+              <View
+                key={row.label}
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: SPACING.sm,
+                }}
+              >
+                <View
+                  style={{
+                    width: 36,
+                    height: 36,
+                    borderRadius: BORDER_RADIUS.round,
+                    backgroundColor: COLORS.background.secondary,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <MaterialIcons name={row.icon} size={18} color={COLORS.primary} />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text
+                    style={{
+                      fontSize: TYPOGRAPHY.sizes.xs,
+                      color: COLORS.text.secondary,
+                      textTransform: 'uppercase',
+                      letterSpacing: 1,
+                    }}
+                  >
+                    {row.label}
+                  </Text>
+                  <Text
+                    style={{
+                      fontSize: TYPOGRAPHY.sizes.md,
+                      color: COLORS.text.primary,
+                      fontWeight: TYPOGRAPHY.weights.semibold,
+                    }}
+                  >
+                    {row.value}
+                  </Text>
+                </View>
+              </View>
+            ))}
+          </View>
+
+          {event.note ? (
+            <Text
+              style={{
+                color: COLORS.text.secondary,
+                lineHeight: 20,
+              }}
+            >
+              {event.note}
+            </Text>
+          ) : null}
+        </View>
+      </View>
+    </Modal>
+  );
+};
 
 const CalendarWeekHeader = () => (
   <View
@@ -849,7 +1097,7 @@ const StandingsHeader = () => (
       Pts
     </Text>
     <Text style={{ width: 68, textAlign: 'right', fontSize: TYPOGRAPHY.sizes.sm, color: COLORS.text.secondary }}>
-      W-D-L
+      W-L-D
     </Text>
     <Text style={{ width: 72, textAlign: 'right', fontSize: TYPOGRAPHY.sizes.sm, color: COLORS.text.secondary }}>
       GF-GA
@@ -924,7 +1172,7 @@ const StandingsRow = ({ entry }) => {
         {entry.points}
       </Text>
       <Text style={{ width: 68, textAlign: 'right', color: COLORS.text.primary }}>
-        {record.wins}-{record.draws}-{record.losses}
+        {record.wins}-{record.losses}-{record.draws}
       </Text>
       <Text style={{ width: 72, textAlign: 'right', color: COLORS.text.primary }}>
         {entry.goalsFor}-{entry.goalsAgainst}
@@ -936,40 +1184,135 @@ const StandingsRow = ({ entry }) => {
   );
 };
 
-const StandingsCard = ({ table }) => (
-  <View
-    style={{
-      backgroundColor: COLORS.background.main,
-      borderRadius: BORDER_RADIUS.xl,
-      padding: SPACING.lg,
-      marginBottom: SPACING.lg,
-      ...SHADOWS.small,
-    }}
-  >
-    <Text
+const STANDINGS_ACCENTS = [
+  {
+    gradient: ['#F5F9FF', '#E3EDFF'],
+    border: '#C3DAFE',
+    badgeBg: '#DBEAFE',
+    badgeText: '#1D4ED8',
+  },
+  {
+    gradient: ['#FFF5F5', '#FFE4E6'],
+    border: '#FECACA',
+    badgeBg: '#FEE2E2',
+    badgeText: '#B91C1C',
+  },
+  {
+    gradient: ['#F0FDF4', '#DCFCE7'],
+    border: '#BBF7D0',
+    badgeBg: '#BBF7D0',
+    badgeText: '#166534',
+  },
+];
+
+const formatOrdinal = (value) => {
+  if (typeof value !== 'number' || Number.isNaN(value)) return value;
+  const mod100 = value % 100;
+  if (mod100 >= 11 && mod100 <= 13) return `${value}th`;
+  switch (value % 10) {
+    case 1:
+      return `${value}st`;
+    case 2:
+      return `${value}nd`;
+    case 3:
+      return `${value}rd`;
+    default:
+      return `${value}th`;
+  }
+};
+
+const StandingsCard = ({ table, isExpanded, onToggle, accentIndex = 0 }) => {
+  const accent = STANDINGS_ACCENTS[accentIndex % STANDINGS_ACCENTS.length];
+  const hawksEntry = table.entries.find((entry) =>
+    (entry.team || '').toLowerCase().includes('smithtown hawks')
+  );
+  const hawksSummary = hawksEntry
+    ? `${formatOrdinal(hawksEntry.rank)} · ${hawksEntry.points} pts`
+    : null;
+
+  return (
+    <LinearGradient
+      colors={accent.gradient}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
       style={{
-        fontSize: TYPOGRAPHY.sizes.xl,
-        fontWeight: TYPOGRAPHY.weights.semibold,
-        color: COLORS.text.primary,
+        borderRadius: BORDER_RADIUS.xl,
+        padding: SPACING.lg,
+        marginBottom: SPACING.lg,
+        borderWidth: 1,
+        borderColor: accent.border,
+        ...SHADOWS.small,
       }}
     >
-      {table.season} · {table.division}
-    </Text>
-    <Text
-      style={{
-        fontSize: TYPOGRAPHY.sizes.md,
-        color: COLORS.text.secondary,
-        marginBottom: SPACING.md,
-      }}
-    >
-      {table.league}
-    </Text>
-    <StandingsHeader />
-    {table.entries.map((entry) => (
-      <StandingsRow key={`${table.id}-${entry.rank}`} entry={entry} />
-    ))}
-  </View>
-);
+      <TouchableOpacity
+        onPress={onToggle}
+        activeOpacity={0.9}
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: SPACING.md,
+        }}
+      >
+        <View style={{ flex: 1 }}>
+          <Text
+            style={{
+              fontSize: TYPOGRAPHY.sizes.xl,
+              fontWeight: TYPOGRAPHY.weights.semibold,
+              color: COLORS.text.primary,
+            }}
+          >
+            {table.season} · {table.division}
+          </Text>
+          <Text
+            style={{
+              fontSize: TYPOGRAPHY.sizes.md,
+              color: COLORS.text.secondary,
+              marginTop: 2,
+            }}
+          >
+            {table.league}
+          </Text>
+          {hawksSummary ? (
+            <View
+              style={{
+                alignSelf: 'flex-start',
+                marginTop: SPACING.xs,
+                paddingHorizontal: SPACING.sm,
+                paddingVertical: 4,
+                borderRadius: BORDER_RADIUS.round,
+                backgroundColor: accent.badgeBg,
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: TYPOGRAPHY.sizes.sm,
+                  fontWeight: TYPOGRAPHY.weights.semibold,
+                  color: accent.badgeText,
+                }}
+              >
+                Hawks: {hawksSummary}
+              </Text>
+            </View>
+          ) : null}
+        </View>
+        <MaterialIcons
+          name={isExpanded ? 'expand-less' : 'expand-more'}
+          size={24}
+          color={COLORS.text.primary}
+        />
+      </TouchableOpacity>
+      {isExpanded && (
+        <View style={{ marginTop: SPACING.md }}>
+          <StandingsHeader />
+          {table.entries.map((entry) => (
+            <StandingsRow key={`${table.id}-${entry.rank}`} entry={entry} />
+          ))}
+        </View>
+      )}
+    </LinearGradient>
+  );
+};
 
 export default function TeamSection() {
   const promotionPulse = useRef(new Animated.Value(0)).current;
@@ -980,6 +1323,15 @@ export default function TeamSection() {
   );
   const eventsByDate = useMemo(() => groupEventsByDate(calendarEvents), [calendarEvents]);
   const [calendarMonth, setCalendarMonth] = useState(INITIAL_CALENDAR_DATE);
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [expandedSeasonIds, setExpandedSeasonIds] = useState(() => {
+    const initialId = GAME_HISTORY?.[0]?.id;
+    return new Set(initialId ? [initialId] : []);
+  });
+  const [expandedStandingsIds, setExpandedStandingsIds] = useState(() => {
+    const initialId = STANDINGS?.[0]?.id;
+    return new Set(initialId ? [initialId] : []);
+  });
   const calendarDays = useMemo(() => buildCalendarDays(calendarMonth), [calendarMonth]);
   const monthLabel = `${MONTH_NAMES_FULL[calendarMonth.getMonth()]} ${calendarMonth.getFullYear()}`;
 
@@ -1007,6 +1359,30 @@ export default function TeamSection() {
     setCalendarMonth((prev) => new Date(prev.getFullYear(), prev.getMonth() + delta, 1));
   };
 
+  const toggleSeason = (seasonId) => {
+    setExpandedSeasonIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(seasonId)) {
+        next.delete(seasonId);
+      } else {
+        next.add(seasonId);
+      }
+      return next;
+    });
+  };
+
+  const toggleStandings = (tableId) => {
+    setExpandedStandingsIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(tableId)) {
+        next.delete(tableId);
+      } else {
+        next.add(tableId);
+      }
+      return next;
+    });
+  };
+
   const promotionStyle = {
     opacity: promotionPulse.interpolate({
       inputRange: [0, 1],
@@ -1023,23 +1399,40 @@ export default function TeamSection() {
   };
 
   return (
-    <ScrollView
-      style={{ flex: 1, backgroundColor: COLORS.background.main }}
-      contentContainerStyle={{
-        paddingVertical: SPACING.xxl,
-        flexGrow: 1,
-      }}
-      showsVerticalScrollIndicator={false}
-    >
-      <Container style={{ gap: SPACING.xxl }}>
-        <View
+    <>
+      <ScrollView
+        style={{ flex: 1, backgroundColor: COLORS.background.main }}
+        contentContainerStyle={{
+          paddingVertical: SPACING.xxl,
+          flexGrow: 1,
+        }}
+        showsVerticalScrollIndicator={false}
+      >
+        <Container style={{ gap: SPACING.xxl }}>
+        <LinearGradient
+          colors={['#F35B5B', '#E02424', '#C81414']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
           style={{
-            backgroundColor: COLORS.primary,
             borderRadius: BORDER_RADIUS.xl,
             padding: SPACING.xxl,
             ...SHADOWS.medium,
+            overflow: 'hidden',
           }}
         >
+          <Image
+            source={require('../../assets/favicon.png')}
+            resizeMode="cover"
+            style={{
+              position: 'absolute',
+              width: '100%',
+              height: '100%',
+              top: 0,
+              left: 0,
+              opacity: 0.05,
+            }}
+            pointerEvents="none"
+          />
           <Text
             style={{
               fontSize: TYPOGRAPHY.sizes.xxxl,
@@ -1083,7 +1476,7 @@ export default function TeamSection() {
               {TEAM_HISTORY.highlight}
             </Text>
           </Animated.View>
-        </View>
+        </LinearGradient>
 
         <View>
           <Text
@@ -1182,6 +1575,7 @@ export default function TeamSection() {
                   key={day.key}
                   day={day}
                   events={eventsByDate[toDateKey(day.date)]}
+                  onEventPress={setSelectedEvent}
                 />
               ))}
             </View>
@@ -1208,8 +1602,14 @@ export default function TeamSection() {
           >
             Recent LIJSL tables showing the Hawks climbing from Division 7E to Division 4E.
           </Text>
-          {STANDINGS.map((table) => (
-            <StandingsCard key={table.id} table={table} />
+          {STANDINGS.map((table, index) => (
+            <StandingsCard
+              key={table.id}
+              table={table}
+              isExpanded={expandedStandingsIds.has(table.id)}
+              onToggle={() => toggleStandings(table.id)}
+              accentIndex={index}
+            />
           ))}
         </View>
 
@@ -1251,10 +1651,17 @@ export default function TeamSection() {
           </Text>
 
           {GAME_HISTORY.map((season) => (
-            <SeasonCard key={season.id} season={season} />
+            <SeasonCard
+              key={season.id}
+              season={season}
+              isExpanded={expandedSeasonIds.has(season.id)}
+              onToggle={() => toggleSeason(season.id)}
+            />
           ))}
         </View>
-      </Container>
-    </ScrollView>
+        </Container>
+      </ScrollView>
+      <EventDetailModal event={selectedEvent} onClose={() => setSelectedEvent(null)} />
+    </>
   );
 }

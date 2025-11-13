@@ -1,6 +1,7 @@
 import React from 'react';
-import { ScrollView, View, Text, Linking } from 'react-native';
+import { ScrollView, View, Text, Linking, Image } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS, SPACING, SHADOWS, BORDER_RADIUS, TYPOGRAPHY } from '../../constants/design-system';
 import { CLUB_INFO, SCHEDULE_INFO, TEAM_STATS } from '../../constants/content';
 import Container from '../ui/Container';
@@ -125,14 +126,30 @@ export default function ContactSection() {
       showsVerticalScrollIndicator={false}
     >
       <Container style={{ gap: SPACING.xxl }}>
-        <View
+        <LinearGradient
+          colors={['#F35B5B', '#E02424', '#C81414']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
           style={{
-            backgroundColor: COLORS.primary,
             borderRadius: BORDER_RADIUS.xl,
             padding: SPACING.xxl,
             ...SHADOWS.medium,
+            overflow: 'hidden',
           }}
         >
+          <Image
+            source={require('../../assets/favicon.png')}
+            resizeMode="cover"
+            style={{
+              position: 'absolute',
+              width: '100%',
+              height: '100%',
+              top: 0,
+              left: 0,
+              opacity: 0.05,
+            }}
+            pointerEvents="none"
+          />
           <Text
             style={{
               fontSize: TYPOGRAPHY.sizes.xxxl,
@@ -146,7 +163,7 @@ export default function ContactSection() {
           <Text
             style={{
               fontSize: TYPOGRAPHY.sizes.lg,
-              color: COLORS.text.white,
+              color: 'rgba(255,255,255,0.92)',
               marginBottom: SPACING.md,
             }}
           >
@@ -164,7 +181,7 @@ export default function ContactSection() {
           }}
           textStyle={{ color: COLORS.text.white }}
         />
-        </View>
+        </LinearGradient>
 
         <View>
           <Text
