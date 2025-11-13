@@ -60,8 +60,6 @@ export default function ParentPortal() {
     setCredentials((prev) => ({ ...prev, [key]: value }));
   };
 
-  const [feedback, setFeedback] = useState('');
-
   return (
     <ScrollView
       style={{ flex: 1, backgroundColor: COLORS.background.secondary }}
@@ -110,7 +108,7 @@ export default function ParentPortal() {
               lineHeight: 24,
             }}
           >
-            Secure access for Smithtown Hawks families to review player cards, session media, and internal updates.
+            Secure access for Smithtown Hawks families to review team media, player development notes, and protected updates.
           </Text>
         </LinearGradient>
 
@@ -157,7 +155,7 @@ export default function ParentPortal() {
             style={{
               backgroundColor: COLORS.background.main,
               borderRadius: BORDER_RADIUS.xl,
-              padding: SPACING.xxl,
+              padding: SPACING.xl,
               ...SHADOWS.small,
             }}
           >
@@ -168,8 +166,7 @@ export default function ParentPortal() {
                 marginBottom: SPACING.lg,
               }}
             >
-              Portal access is limited to current Hawks families. Credentials will be distributed by the staff once the
-              secure backend is live.
+              Portal access is limited to current Hawks families. Credentials will be distributed by staff once secure authentication launches.
             </Text>
 
             <View style={{ gap: SPACING.lg }}>

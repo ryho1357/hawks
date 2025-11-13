@@ -758,8 +758,10 @@ const getEventPalette = (event) => {
   };
 };
 
-const CalendarDay = ({ day, events, onEventPress }) => (
-  <View style={{ width: `${100 / 7}%`, padding: 4 }}>
+const CalendarDay = ({ day, events, onEventPress }) => {
+  const cellHeight = isDesktop() ? 130 : 110;
+  return (
+    <View style={{ width: `${100 / 7}%`, padding: 4 }}>
     <View
       style={{
         borderRadius: BORDER_RADIUS.md,
@@ -767,7 +769,7 @@ const CalendarDay = ({ day, events, onEventPress }) => (
         borderColor: day.isCurrentMonth ? COLORS.background.tertiary : COLORS.background.secondary,
         backgroundColor: day.isCurrentMonth ? COLORS.background.main : COLORS.background.secondary,
         opacity: day.isCurrentMonth ? 1 : 0.65,
-        minHeight: 96,
+        height: cellHeight,
         padding: SPACING.xs,
         gap: SPACING.xs,
       }}
@@ -796,6 +798,7 @@ const CalendarDay = ({ day, events, onEventPress }) => (
               borderWidth: 1,
               borderColor: palette.border,
               gap: 2,
+              overflow: 'hidden',
             }}
           >
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
@@ -806,6 +809,8 @@ const CalendarDay = ({ day, events, onEventPress }) => (
                   fontWeight: TYPOGRAPHY.weights.semibold,
                   color: palette.title,
                 }}
+                numberOfLines={1}
+                ellipsizeMode="tail"
               >
                 {event.title}
               </Text>
@@ -815,6 +820,8 @@ const CalendarDay = ({ day, events, onEventPress }) => (
                 fontSize: TYPOGRAPHY.sizes.xs,
                 color: COLORS.text.secondary,
               }}
+              numberOfLines={1}
+              ellipsizeMode="tail"
             >
               {event.details}
             </Text>
@@ -823,6 +830,8 @@ const CalendarDay = ({ day, events, onEventPress }) => (
                 fontSize: TYPOGRAPHY.sizes.xs,
                 color: COLORS.text.secondary,
               }}
+              numberOfLines={1}
+              ellipsizeMode="tail"
             >
               {event.seasonLabel}
             </Text>
@@ -841,8 +850,9 @@ const CalendarDay = ({ day, events, onEventPress }) => (
         );
       })}
     </View>
-  </View>
-);
+    </View>
+  );
+};
 
 const EventDetailModal = ({ event, onClose }) => {
   if (!event) return null;
