@@ -25,7 +25,7 @@ const PAGES = [
   { component: Hero, name: 'Home', slug: 'home' },
   { component: AboutSection, name: 'About', slug: 'about' },
   { component: TeamSection, name: 'Team', slug: 'team' },
-  { component: ParentPortal, name: 'Parent Portal', slug: 'portal' },
+  { component: ParentPortal, name: 'Portal', slug: 'portal' },
   { component: ContactSection, name: 'Contact', slug: 'contact' },
 ];
 
