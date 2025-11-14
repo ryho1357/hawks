@@ -1,6 +1,7 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, Image, Animated } from 'react-native';
 import { useRouter, usePathname, useLocalSearchParams } from 'expo-router';
+import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS, SHADOWS, SPACING } from '../../constants/design-system';
 import { NAVIGATION_ITEMS } from '../../constants/navigation';
 import { isDesktop, isMobile } from '../../utils/responsive';
@@ -37,92 +38,73 @@ export default function Header() {
 
   const isActive = (slug) => derivedSlug === slug;
   const logoSize = mobileView ? 52 : 72;
+  const leagueBadgeSize = mobileView ? 44 : 56;
 
-  const particleConfigs = useMemo(
-    () =>
-      Array.from({ length: 24 }).map((_, index) => ({
-        size: mobileView ? 6 : 9,
-        left: `${Math.random() * 100}%`,
-        startOffset: Math.random() * 40 - 20,
-        delay: index * 80,
-        travel: mobileView ? 28 : 40,
-      })),
-    [mobileView]
-  );
-
-  const particleAnimations = useRef(particleConfigs.map(() => new Animated.Value(0))).current;
+  const orbAnimation = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    particleAnimations.forEach((anim, index) => {
-      const loop = Animated.loop(
-        Animated.sequence([
-          Animated.timing(anim, {
-            toValue: 1,
-            duration: 2200,
-            delay: particleConfigs[index].delay,
-            useNativeDriver: true,
-          }),
-          Animated.timing(anim, {
-            toValue: 0,
-            duration: 2200,
-            useNativeDriver: true,
-          }),
-        ])
-      );
-      loop.start();
-    });
-  }, [particleAnimations, particleConfigs]);
+    const loop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(orbAnimation, {
+          toValue: 1,
+          duration: 2600,
+          useNativeDriver: true,
+        }),
+        Animated.timing(orbAnimation, {
+          toValue: 0,
+          duration: 2600,
+          useNativeDriver: true,
+        }),
+      ])
+    );
+    loop.start();
+
+    return () => loop.stop();
+  }, [orbAnimation]);
+
+  const orbScale = orbAnimation.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0.95, 1.1],
+  });
+  const orbTranslate = orbAnimation.interpolate({
+    inputRange: [0, 1],
+    outputRange: [-24, -8],
+  });
+  const orbOpacity = orbAnimation.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0.12, 0.22],
+  });
 
   return (
-    <View
+    <LinearGradient
+      colors={['#FFFFFF', '#F8FBFF', '#FDEFF0']}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
       style={{
-        backgroundColor: COLORS.background.main,
         borderBottomWidth: 1,
         borderBottomColor: COLORS.background.tertiary,
         ...SHADOWS.small,
         position: 'relative',
-        overflow: 'hidden',
       }}
     >
-      <View
+      <LinearGradient
         pointerEvents="none"
+        colors={['rgba(227, 24, 55, 0.95)', 'rgba(227, 24, 55, 0.2)']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
         style={{
           position: 'absolute',
           top: 0,
-          right: 0,
           left: 0,
-          bottom: 0,
+          right: 0,
+          height: 8,
+          shadowColor: 'rgba(227, 24, 55, 0.75)',
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: 0.8,
+          shadowRadius: 10,
+          elevation: 8,
         }}
-      >
-        {particleConfigs.map((particle, index) => {
-          const animation = particleAnimations[index % particleAnimations.length];
-          const translateY = animation.interpolate({
-            inputRange: [0, 1],
-            outputRange: [particle.startOffset, particle.startOffset + particle.travel],
-          });
-          const opacity = animation.interpolate({
-            inputRange: [0, 0.5, 1],
-            outputRange: [0, 0.35, 0],
-          });
-
-          return (
-            <Animated.View
-              key={`particle-${index}`}
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: particle.left,
-                width: particle.size,
-                height: particle.size,
-                borderRadius: particle.size / 2,
-                backgroundColor: COLORS.primary,
-                transform: [{ translateY }],
-                opacity,
-              }}
-            />
-          );
-        })}
-      </View>
+      />
       <Container>
         <View style={{
           flexDirection: 'row',
@@ -130,19 +112,35 @@ export default function Header() {
           paddingVertical: SPACING.md,
           minHeight: 60
         }}>
-          {/* Hawks Icon */}
-          <Image
-            source={require('../../assets/favicon.png')}
+          <View
             style={{
-              width: logoSize,
-              height: logoSize,
-              borderRadius: logoSize / 2,
-              borderWidth: 0,
-              borderColor: COLORS.primary,
-              marginRight: SPACING.md
+              flexDirection: 'row',
+              alignItems: 'center',
+              marginRight: SPACING.md,
             }}
-            resizeMode="contain"
-          />
+          >
+            <Image
+              source={require('../../assets/images/logo/lijsl.png')}
+              style={{
+                width: leagueBadgeSize,
+                height: leagueBadgeSize,
+                opacity: 0.8,
+                marginRight: SPACING.sm,
+                resizeMode: 'contain',
+              }}
+            />
+            <Image
+              source={require('../../assets/favicon.png')}
+              style={{
+                width: logoSize,
+                height: logoSize,
+                borderRadius: logoSize / 2,
+                borderWidth: 0,
+                borderColor: COLORS.primary,
+                resizeMode: 'contain',
+              }}
+            />
+          </View>
 
           {/* Primary Navigation */}
           <View style={{
@@ -177,6 +175,20 @@ export default function Header() {
           </View>
         </View>
       </Container>
-    </View>
+      <Animated.View
+        pointerEvents="none"
+        style={{
+          position: 'absolute',
+          top: orbTranslate,
+          right: 0,
+          width: 190,
+          height: 190,
+          borderRadius: 140,
+          backgroundColor: COLORS.primary,
+          opacity: orbOpacity,
+          transform: [{ translateX: 28 }, { translateY: orbTranslate }, { scale: orbScale }],
+        }}
+      />
+    </LinearGradient>
   );
 }

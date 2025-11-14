@@ -1,8 +1,9 @@
 // constants/content.js
 import { GAME_HISTORY, getAggregateTotals, getSeasonSummary } from './gameHistory';
 
-const AGGREGATE_TOTALS = getAggregateTotals();
-const CURRENT_SEASON = getSeasonSummary(GAME_HISTORY[0]?.id);
+const LEAGUE_TOTALS = getAggregateTotals({ includeCups: false });
+const CURRENT_SEASON_ID = GAME_HISTORY.find((season) => !season.isCup)?.id || GAME_HISTORY[0]?.id;
+const CURRENT_SEASON = getSeasonSummary(CURRENT_SEASON_ID);
 
 // Club Information
 export const CLUB_INFO = {
@@ -75,10 +76,10 @@ const DEFAULT_RECORD = { wins: 0, draws: 0, losses: 0 };
 // Season Information
 export const TEAM_HISTORY = {
   totals: {
-    matchesPlayed: AGGREGATE_TOTALS.matchesPlayed,
-    wins: AGGREGATE_TOTALS.wins,
-    draws: AGGREGATE_TOTALS.draws,
-    losses: AGGREGATE_TOTALS.losses,
+    matchesPlayed: LEAGUE_TOTALS.matchesPlayed,
+    wins: LEAGUE_TOTALS.wins,
+    draws: LEAGUE_TOTALS.draws,
+    losses: LEAGUE_TOTALS.losses,
   },
   currentSeason: {
     season: CURRENT_SEASON?.season || "Season TBA",
@@ -160,9 +161,9 @@ export const TEAM_ROSTER = [
 
 // Team Stats Summary
 export const TEAM_STATS = {
-  goalsScored: AGGREGATE_TOTALS.goalsFor,
-  goalsAllowed: AGGREGATE_TOTALS.goalsAgainst,
-  cleanSheets: AGGREGATE_TOTALS.cleanSheets,
+  goalsScored: LEAGUE_TOTALS.goalsFor,
+  goalsAllowed: LEAGUE_TOTALS.goalsAgainst,
+  cleanSheets: LEAGUE_TOTALS.cleanSheets,
   playerCount: TEAM_ROSTER.length,
   streak: CURRENT_SEASON
     ? `${CURRENT_SEASON.season} form (W-L-D): ${CURRENT_SEASON.record?.wins ?? 0}-${CURRENT_SEASON.record?.losses ?? 0}-${CURRENT_SEASON.record?.draws ?? 0}`

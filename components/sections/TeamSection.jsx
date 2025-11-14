@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { ScrollView, View, Text, Animated, TouchableOpacity, Modal, TouchableWithoutFeedback, Image } from 'react-native';
+import { ScrollView, View, Text, Animated, TouchableOpacity, Modal, TouchableWithoutFeedback, Image, Linking } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
 import { COLORS, SPACING, SHADOWS, BORDER_RADIUS, TYPOGRAPHY } from '../../constants/design-system';
@@ -645,24 +645,31 @@ const SeasonCard = ({ season, isExpanded, onToggle }) => {
   );
 };
 
+const buildMapsLink = (location) => {
+  if (!location) return null;
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}`;
+};
+
 const buildCalendarEvents = (matches = [], practices = []) => {
   const matchEvents = matches.map((match, index) => {
     const hasScore =
       typeof match?.score?.hawks === 'number' && typeof match?.score?.opponent === 'number';
     const scoreline = hasScore ? `${match.score.hawks}-${match.score.opponent}` : '';
+    const locationLabel = match?.location || 'Location TBD';
 
     return {
       id: `${match.seasonId}-${match.date}-${match.opponent}-${index}`,
       date: match.date,
       title: `${match.isHome ? 'vs' : '@'} ${match.opponent}`,
-      details: `${match.kickoff || 'TBD'} · ${match.location}`,
+      details: `${match.kickoff || 'TBD'} · ${locationLabel}`,
       seasonLabel: match.seasonName,
       type: 'game',
       result: match.result,
       scoreline,
       isPlayed: Boolean(scoreline || match.result),
       time: match?.kickoff || 'Time TBD',
-      location: match?.location || 'Location TBD',
+      location: locationLabel,
+      mapsUrl: buildMapsLink(match?.location),
       note: match?.notes || '',
     };
   });
@@ -671,11 +678,12 @@ const buildCalendarEvents = (matches = [], practices = []) => {
     id: `practice-${session.date}-${index}`,
     date: session.date,
     title: session.title || 'Indoor Practice',
-    details: `${session.time} · ${session.location}`,
+    details: `${session.time} · ${session.location || 'Location TBD'}`,
     seasonLabel: session.address || 'Indoor Training',
     type: 'practice',
     time: session?.time || 'Time TBD',
     location: session?.location || 'Location TBD',
+    mapsUrl: buildMapsLink(session?.location),
     note: session?.address || '',
   }));
 
@@ -873,7 +881,12 @@ const EventDetailModal = ({ event, onClose }) => {
 
   const infoRows = [
     { icon: 'schedule', label: 'Time', value: event.time || 'Time TBD' },
-    { icon: 'place', label: 'Location', value: event.location || 'Location TBD' },
+    {
+      icon: 'place',
+      label: 'Location',
+      value: event.location || 'Location TBD',
+      link: event.mapsUrl,
+    },
   ];
 
   return (
@@ -994,50 +1007,65 @@ const EventDetailModal = ({ event, onClose }) => {
           </View>
 
           <View style={{ gap: SPACING.sm }}>
-            {infoRows.map((row) => (
-              <View
-                key={row.label}
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  gap: SPACING.sm,
-                }}
-              >
-                <View
+            {infoRows.map((row) => {
+              const Wrapper = row.link ? TouchableOpacity : View;
+              const wrapperProps = row.link
+                ? {
+                    onPress: () => {
+                      if (row.link) {
+                        Linking.openURL(row.link);
+                      }
+                    },
+                    activeOpacity: 0.8,
+                  }
+                : {};
+              return (
+                <Wrapper
+                  key={row.label}
                   style={{
-                    width: 36,
-                    height: 36,
-                    borderRadius: BORDER_RADIUS.round,
-                    backgroundColor: COLORS.background.secondary,
+                    flexDirection: 'row',
                     alignItems: 'center',
-                    justifyContent: 'center',
+                    gap: SPACING.sm,
                   }}
+                  {...wrapperProps}
                 >
-                  <MaterialIcons name={row.icon} size={18} color={COLORS.primary} />
-                </View>
-                <View style={{ flex: 1 }}>
-                  <Text
+                  <View
                     style={{
-                      fontSize: TYPOGRAPHY.sizes.xs,
-                      color: COLORS.text.secondary,
-                      textTransform: 'uppercase',
-                      letterSpacing: 1,
+                      width: 36,
+                      height: 36,
+                      borderRadius: BORDER_RADIUS.round,
+                      backgroundColor: COLORS.background.secondary,
+                      alignItems: 'center',
+                      justifyContent: 'center',
                     }}
                   >
-                    {row.label}
-                  </Text>
-                  <Text
-                    style={{
-                      fontSize: TYPOGRAPHY.sizes.md,
-                      color: COLORS.text.primary,
-                      fontWeight: TYPOGRAPHY.weights.semibold,
-                    }}
-                  >
-                    {row.value}
-                  </Text>
-                </View>
-              </View>
-            ))}
+                    <MaterialIcons name={row.icon} size={18} color={COLORS.primary} />
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text
+                      style={{
+                        fontSize: TYPOGRAPHY.sizes.xs,
+                        color: COLORS.text.secondary,
+                        textTransform: 'uppercase',
+                        letterSpacing: 1,
+                      }}
+                    >
+                      {row.label}
+                    </Text>
+                    <Text
+                      style={{
+                        fontSize: TYPOGRAPHY.sizes.md,
+                        color: row.link ? COLORS.primary : COLORS.text.primary,
+                        fontWeight: TYPOGRAPHY.weights.semibold,
+                        textDecorationLine: row.link ? 'underline' : 'none',
+                      }}
+                    >
+                      {row.value}
+                    </Text>
+                  </View>
+                </Wrapper>
+              );
+            })}
           </View>
 
           {event.note ? (
