@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState, useRef } from 'react';
-import { View, Text, TouchableOpacity, TextInput, Animated } from 'react-native';
+import { View, Text, TouchableOpacity, TextInput, Animated, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Svg, { Circle } from 'react-native-svg';
 import { COLORS, SPACING, SHADOWS, BORDER_RADIUS, TYPOGRAPHY } from '../../constants/design-system';
@@ -25,6 +25,15 @@ const getScoreColor = (value) => {
   }
   return COLORS.primary;
 };
+
+const headerStickyStyles = Platform.select({
+  web: {
+    position: 'sticky',
+    top: 0,
+    zIndex: 10,
+  },
+  default: {},
+});
 
 const CategoryRing = ({ title, description, value }) => {
   const progress = useRef(new Animated.Value(0)).current;
@@ -278,6 +287,14 @@ export default function PlayerEvaluationCard({
   const seasonLabel = player.seasonLabel || 'U13 Girls';
   const lastUpdatedDisplay = lastUpdated ? new Date(lastUpdated).toLocaleDateString() : null;
   const totalPoints = useMemo(() => getPlayerTotalPoints(scores), [scores]);
+  const playerInitials = useMemo(() => {
+    if (!player.name) return 'HP';
+    const parts = player.name.split(' ').filter(Boolean);
+    return parts
+      .slice(0, 2)
+      .map((part) => part[0]?.toUpperCase() || '')
+      .join('');
+  }, [player.name]);
 
   return (
     <View
@@ -292,78 +309,72 @@ export default function PlayerEvaluationCard({
         colors={['#111b2c', '#1F2A44', '#B91C1C']}
         style={{
           borderRadius: BORDER_RADIUS.xl,
-          padding: SPACING.lg,
+          padding: SPACING.md,
           ...SHADOWS.medium,
+          ...headerStickyStyles,
         }}
       >
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', gap: SPACING.lg }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: SPACING.md }}>
+          <View
+            style={{
+              width: 72,
+              height: 72,
+              borderRadius: 36,
+              backgroundColor: 'rgba(255,255,255,0.15)',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Text style={{ color: COLORS.text.white, fontSize: TYPOGRAPHY.sizes.xxl, fontWeight: TYPOGRAPHY.weights.bold }}>
+              {playerInitials}
+            </Text>
+          </View>
           <View style={{ flex: 1 }}>
             <Text
               style={{
-                fontSize: TYPOGRAPHY.sizes.display,
+                fontSize: TYPOGRAPHY.sizes.xxxl,
                 fontWeight: TYPOGRAPHY.weights.bold,
                 color: COLORS.text.white,
               }}
             >
               {player.name}
             </Text>
-            <Text style={{ color: COLORS.text.white, fontSize: TYPOGRAPHY.sizes.lg, marginTop: SPACING.xs }}>
+            <Text style={{ color: COLORS.text.white, marginTop: 2 }}>
               #{player.number} • {player.position}
             </Text>
-            <Text style={{ color: COLORS.text.white, opacity: 0.8, marginTop: SPACING.xs }}>
+            <Text style={{ color: COLORS.text.white, opacity: 0.8 }}>
               {seasonLabel} | {divisionLabel}
             </Text>
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.xs, marginTop: SPACING.sm }}>
-          {[player.roleTag, `${player.graduationYear} Grad`, `${player.footedness}-footed`]
-            .filter(Boolean)
-            .map((tag) => (
-              <View
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.xs, marginTop: SPACING.xs }}>
+              {[player.roleTag, `${player.graduationYear} Grad`, `${player.footedness}-footed`]
+                .filter(Boolean)
+                .map((tag) => (
+                  <View
                     key={tag}
                     style={{
                       paddingHorizontal: SPACING.sm,
-                      paddingVertical: 4,
+                      paddingVertical: 2,
                       borderRadius: BORDER_RADIUS.round,
-                      backgroundColor: 'rgba(255,255,255,0.15)',
+                      backgroundColor: 'rgba(255,255,255,0.1)',
                     }}
                   >
                     <Text style={{ color: COLORS.text.white, fontSize: TYPOGRAPHY.sizes.sm }}>{tag}</Text>
                   </View>
-            ))}
-        </View>
-        <View
-          style={{
-            marginTop: SPACING.md,
-            padding: SPACING.sm,
-            borderRadius: BORDER_RADIUS.lg,
-            backgroundColor: 'rgba(255,255,255,0.1)',
-            alignSelf: 'flex-start',
-          }}
-        >
-          <Text style={{ color: COLORS.text.white, fontSize: TYPOGRAPHY.sizes.sm, opacity: 0.8 }}>
-            Season Points
-          </Text>
-          <Text
-            style={{
-              color: COLORS.text.white,
-              fontSize: TYPOGRAPHY.sizes.xxl,
-              fontWeight: TYPOGRAPHY.weights.bold,
-            }}
-          >
-            {totalPoints.toLocaleString()}
-          </Text>
-        </View>
+                ))}
+            </View>
           </View>
           <View
             style={{
-              width: 140,
-              borderRadius: BORDER_RADIUS.xl,
+              padding: SPACING.sm,
+              borderRadius: BORDER_RADIUS.lg,
               backgroundColor: 'rgba(255,255,255,0.1)',
-              padding: SPACING.md,
-              alignItems: 'center',
-              justifyContent: 'center',
+              alignItems: 'flex-start',
+              minWidth: 120,
             }}
           >
-            <Text style={{ color: COLORS.text.white, opacity: 0.8 }}>Program Focus</Text>
+            <Text style={{ color: COLORS.text.white, fontSize: TYPOGRAPHY.sizes.sm, opacity: 0.8 }}>
+              Season Points
+            </Text>
             <Text
               style={{
                 color: COLORS.text.white,
@@ -371,28 +382,25 @@ export default function PlayerEvaluationCard({
                 fontWeight: TYPOGRAPHY.weights.bold,
               }}
             >
-              Creative 10
+              {totalPoints.toLocaleString()}
             </Text>
-            <Text style={{ color: COLORS.text.white, opacity: 0.8, fontSize: TYPOGRAPHY.sizes.sm }}>
-              D4E attacking mid
-            </Text>
+            {lastUpdatedDisplay && (
+              <Text style={{ color: COLORS.text.white, opacity: 0.7, fontSize: TYPOGRAPHY.sizes.xs }}>
+                {lastUpdatedDisplay}
+              </Text>
+            )}
           </View>
         </View>
         <Text
           style={{
             color: COLORS.text.white,
-            marginTop: SPACING.md,
+            marginTop: SPACING.sm,
             lineHeight: 20,
           }}
         >
           Building composure for LIJSL D4E knockout play. Tracking how Avery links midfield to front
           line while staying relentless in transition moments.
         </Text>
-        {lastUpdatedDisplay && (
-          <Text style={{ color: COLORS.text.white, opacity: 0.7, marginTop: SPACING.sm, fontSize: TYPOGRAPHY.sizes.sm }}>
-            Updated {lastUpdatedDisplay}
-          </Text>
-        )}
       </LinearGradient>
 
       <View

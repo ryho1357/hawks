@@ -147,6 +147,9 @@ export default function CoachEvaluationBoard({
 }) {
   const initialPlayerId = roster[0]?.id || null;
   const [activePlayerId, setActivePlayerId] = useState(initialPlayerId);
+  const [selectedPlayerIds, setSelectedPlayerIds] = useState(
+    initialPlayerId ? [initialPlayerId] : []
+  );
   const [scores, setScores] = useState(() =>
     buildInitialScoreMap(evaluationsByPlayer[initialPlayerId]?.scores)
   );
@@ -155,12 +158,21 @@ export default function CoachEvaluationBoard({
     evaluationsByPlayer[initialPlayerId]?.lastUpdated || null
   );
   const [status, setStatus] = useState('saved');
+  const [selectedCategoryIndex, setSelectedCategoryIndex] = useState(0);
+  const [selectedMetricKey, setSelectedMetricKey] = useState(
+    PLAYER_EVALUATION_GROUPS[0]?.metrics[0]?.key || null
+  );
+  const [pointsInput, setPointsInput] = useState('');
+  const [awardMessage, setAwardMessage] = useState('');
 
   useEffect(() => {
     if (!activePlayerId && roster.length) {
       setActivePlayerId(roster[0].id);
     }
-  }, [activePlayerId, roster]);
+    if (!selectedPlayerIds.length && roster.length) {
+      setSelectedPlayerIds([roster[0].id]);
+    }
+  }, [activePlayerId, selectedPlayerIds.length, roster]);
 
   const activePlayer = roster.find((player) => player.id === activePlayerId) || roster[0];
 
@@ -175,13 +187,82 @@ export default function CoachEvaluationBoard({
     setStatus('saved');
   }, [activePlayer, evaluationsByPlayer]);
 
+  useEffect(() => {
+    const metrics = PLAYER_EVALUATION_GROUPS[selectedCategoryIndex]?.metrics || [];
+    if (!metrics.length) {
+      setSelectedMetricKey(null);
+      return;
+    }
+    if (!metrics.find((metric) => metric.key === selectedMetricKey)) {
+      setSelectedMetricKey(metrics[0].key);
+    }
+  }, [selectedCategoryIndex, selectedMetricKey]);
+
   const groupTotals = useMemo(() => buildGroupTotals(scores), [scores]);
   const overallPoints = useMemo(() => getPlayerTotalPoints(scores), [scores]);
-
   const orderedMetrics = useMemo(() => sortMetricsByScore(scores), [scores]);
   const topMetrics = orderedMetrics.slice(0, 3);
   const growthMetrics = orderedMetrics.slice(-3).reverse();
   const focusTags = orderedMetrics.slice(-6);
+  const selectedNames = useMemo(
+    () =>
+      roster
+        .filter((player) => selectedPlayerIds.includes(player.id))
+        .map((player) => player.name)
+        .join(', '),
+    [roster, selectedPlayerIds]
+  );
+  const selectedCategory = PLAYER_EVALUATION_GROUPS[selectedCategoryIndex] || null;
+  const selectedMetrics = selectedCategory?.metrics || [];
+
+  const togglePlayerSelection = (playerId) => {
+    setAwardMessage('');
+    setSelectedPlayerIds((prev) => {
+      let next;
+      if (prev.includes(playerId)) {
+        next = prev.filter((id) => id !== playerId);
+        if (!next.length) {
+          next = [playerId];
+        }
+      } else {
+        next = [...prev, playerId];
+      }
+      return next;
+    });
+    setActivePlayerId(playerId);
+  };
+
+  const handleAwardPoints = async () => {
+    const amount = parseInt(pointsInput, 10);
+    if (!amount || !selectedMetricKey || !selectedPlayerIds.length) {
+      setAwardMessage('Select players, a metric, and enter points to award.');
+      return;
+    }
+    setAwardMessage('');
+    const timestamp = new Date().toISOString();
+    for (const playerId of selectedPlayerIds) {
+      const existing = evaluationsByPlayer[playerId] || {};
+      const currentScores = buildInitialScoreMap(existing.scores);
+      const updatedScores = {
+        ...currentScores,
+        [selectedMetricKey]: clampEvaluationValue(
+          (currentScores[selectedMetricKey] || 0) + amount
+        ),
+      };
+      const payload = {
+        ...existing,
+        scores: updatedScores,
+        lastUpdated: timestamp,
+      };
+      if (playerId === activePlayer?.id) {
+        setScores(updatedScores);
+        setLastUpdated(timestamp);
+      }
+      await onSavePlayer?.(playerId, payload);
+    }
+    setPointsInput('');
+    setAwardMessage(`+${amount} pts added to ${selectedPlayerIds.length} player(s).`);
+  };
 
   const adjustMetric = (key, delta) => {
     setScores((prev) => {
@@ -227,12 +308,107 @@ export default function CoachEvaluationBoard({
                 key={player.id}
                 player={player}
                 active={player.id === activePlayer?.id}
+                selected={selectedPlayerIds.includes(player.id)}
                 summaryScore={totalPoints}
-                onPress={() => setActivePlayerId(player.id)}
+                onPress={() => togglePlayerSelection(player.id)}
               />
             );
           })}
         </View>
+      </View>
+
+      <View
+        style={{
+          backgroundColor: COLORS.background.main,
+          borderRadius: BORDER_RADIUS.xl,
+          padding: SPACING.lg,
+          ...SHADOWS.medium,
+          gap: SPACING.md,
+        }}
+      >
+        <Text style={{ fontSize: TYPOGRAPHY.sizes.xl, fontWeight: TYPOGRAPHY.weights.semibold, color: COLORS.text.primary }}>
+          Quick Reward
+        </Text>
+        <Text style={{ color: COLORS.text.secondary }}>
+          Selected: {selectedNames || 'Choose at least one player'}
+        </Text>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.sm }}>
+          {PLAYER_EVALUATION_GROUPS.map((group, index) => (
+            <TouchableOpacity
+              key={group.title}
+              onPress={() => setSelectedCategoryIndex(index)}
+              style={{
+                paddingHorizontal: SPACING.md,
+                paddingVertical: SPACING.sm,
+                borderRadius: BORDER_RADIUS.round,
+                backgroundColor: index === selectedCategoryIndex ? COLORS.primary : COLORS.background.secondary,
+              }}
+            >
+              <Text
+                style={{
+                  color: index === selectedCategoryIndex ? COLORS.text.white : COLORS.text.primary,
+                  fontWeight: TYPOGRAPHY.weights.medium,
+                }}
+              >
+                {group.title}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          <View style={{ flexDirection: 'row', gap: SPACING.sm }}>
+            {selectedMetrics.map((metric) => (
+              <TouchableOpacity
+                key={`award-${metric.key}`}
+                onPress={() => setSelectedMetricKey(metric.key)}
+                style={{
+                  paddingHorizontal: SPACING.md,
+                  paddingVertical: SPACING.sm,
+                  borderRadius: BORDER_RADIUS.round,
+                  backgroundColor:
+                    selectedMetricKey === metric.key ? COLORS.primary : COLORS.background.secondary,
+                  borderWidth: 1,
+                  borderColor:
+                    selectedMetricKey === metric.key ? COLORS.primary : COLORS.background.tertiary,
+                }}
+              >
+                <Text
+                  style={{
+                    color: selectedMetricKey === metric.key ? COLORS.text.white : COLORS.text.primary,
+                    fontWeight: TYPOGRAPHY.weights.medium,
+                  }}
+                >
+                  {metric.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </ScrollView>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: SPACING.sm }}>
+          <TextInput
+            value={pointsInput}
+            onChangeText={setPointsInput}
+            placeholder="+10 pts"
+            placeholderTextColor={COLORS.text.secondary + '80'}
+            keyboardType="numeric"
+            style={{
+              flex: 1,
+              borderWidth: 1,
+              borderColor: COLORS.background.tertiary,
+              borderRadius: BORDER_RADIUS.lg,
+              padding: SPACING.sm,
+              color: COLORS.text.primary,
+            }}
+          />
+          <Button
+            title="Award Points"
+            onPress={handleAwardPoints}
+            style={{ minWidth: 160 }}
+          />
+        </View>
+        {!!awardMessage && (
+          <Text style={{ color: COLORS.text.secondary }}>{awardMessage}</Text>
+        )}
       </View>
 
       <LinearGradient

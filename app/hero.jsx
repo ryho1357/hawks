@@ -1,6 +1,6 @@
 // app/hero.jsx - Enhanced version
-import React, { useMemo } from 'react';
-import { View, Text, TouchableOpacity, Dimensions, StyleSheet } from 'react-native';
+import React, { useMemo, useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity, Dimensions, StyleSheet, Linking } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -160,51 +160,190 @@ const SoccerBallCluster = () => {
   );
 };
 
-const TodayDetailRow = ({ icon, label, value }) => (
-  <View
-    style={{
-      flexDirection: 'row',
-      alignItems: 'flex-start',
-      marginBottom: SPACING.md,
-    }}
-  >
-    <View
+const TodayDetailRow = ({ icon, label, value, onPress }) => {
+  const Container = onPress ? TouchableOpacity : View;
+  const containerProps = onPress
+    ? { onPress, activeOpacity: 0.75 }
+    : {};
+
+  return (
+    <Container
+      {...containerProps}
       style={{
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        backgroundColor: COLORS.primary + '10',
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginRight: SPACING.sm,
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        marginBottom: SPACING.md,
       }}
     >
-      <MaterialIcons name={icon} size={20} color={COLORS.primary} />
-    </View>
-    <View style={{ flex: 1 }}>
-      <Text
+      <View
         style={{
-          fontSize: 13,
-          textTransform: 'uppercase',
-          color: COLORS.text.secondary,
-          fontWeight: '600',
+          width: 40,
+          height: 40,
+          borderRadius: 20,
+          backgroundColor: COLORS.primary + '10',
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginRight: SPACING.sm,
         }}
       >
-        {label}
+        <MaterialIcons name={icon} size={20} color={COLORS.primary} />
+      </View>
+      <View style={{ flex: 1 }}>
+        <Text
+          style={{
+            fontSize: 13,
+            textTransform: 'uppercase',
+            color: COLORS.text.secondary,
+            fontWeight: '600',
+          }}
+        >
+          {label}
+        </Text>
+        <Text
+          style={{
+            fontSize: 16,
+            fontWeight: '600',
+            color: onPress ? COLORS.primary : COLORS.text.primary,
+            lineHeight: 22,
+            textDecorationLine: onPress ? 'underline' : 'none',
+          }}
+        >
+          {value}
+        </Text>
+      </View>
+    </Container>
+  );
+};
+
+const getCountdownParts = (targetDate) => {
+  if (!(targetDate instanceof Date) || Number.isNaN(targetDate.getTime())) return null;
+  const now = Date.now();
+  const diff = targetDate.getTime() - now;
+  const clamped = Math.max(diff, 0);
+  const days = Math.floor(clamped / (24 * 60 * 60 * 1000));
+  const hours = Math.floor((clamped % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+  const minutes = Math.floor((clamped % (60 * 60 * 1000)) / (60 * 1000));
+  const seconds = Math.floor((clamped % (60 * 1000)) / 1000);
+  return { days, hours, minutes, seconds, isPast: diff <= 0 };
+};
+
+const formatCountdownLabel = (parts) => {
+  if (!parts) return '';
+  const pad = (value) => String(value).padStart(2, '0');
+  const time = `${pad(parts.hours)}:${pad(parts.minutes)}:${pad(parts.seconds)}`;
+  return parts.days > 0 ? `${parts.days}d ${time}` : time;
+};
+
+const CountdownTimer = ({
+  targetDate,
+  title,
+  note,
+  variant = 'kickoff',
+  highlightDate,
+  pastLabel,
+}) => {
+  const [parts, setParts] = useState(() => getCountdownParts(targetDate));
+
+  useEffect(() => {
+    if (!targetDate) return undefined;
+    setParts(getCountdownParts(targetDate));
+    const interval = setInterval(() => {
+      setParts(getCountdownParts(targetDate));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [targetDate?.getTime()]);
+
+  if (!targetDate || !parts) return null;
+
+  const hasReachedTarget = parts.isPast;
+  const highlightThreshold = highlightDate instanceof Date ? highlightDate : targetDate;
+  const hasPassedHighlight =
+    highlightThreshold instanceof Date && !Number.isNaN(highlightThreshold.getTime())
+      ? Date.now() >= highlightThreshold.getTime()
+      : hasReachedTarget;
+
+  let palette = {
+    bg: 'rgba(59,130,246,0.15)',
+    border: 'rgba(59,130,246,0.4)',
+    label: '#1D4ED8',
+  };
+  let completeLabel = pastLabel || (variant === 'arrival' ? 'Game on!' : 'Match in progress');
+
+  if (variant === 'arrival') {
+    if (hasPassedHighlight) {
+      palette = {
+        bg: 'rgba(16,185,129,0.15)',
+        border: 'rgba(16,185,129,0.45)',
+        label: '#0F9D58',
+      };
+    } else {
+      palette = {
+        bg: 'rgba(251,191,36,0.25)',
+        border: 'rgba(251,191,36,0.6)',
+        label: '#92400E',
+      };
+    }
+  }
+
+  const countdownLabel = hasReachedTarget ? completeLabel : formatCountdownLabel(parts);
+
+  return (
+    <View
+      style={{
+        marginTop: SPACING.lg,
+        paddingHorizontal: SPACING.lg,
+        paddingVertical: SPACING.md,
+        borderRadius: 20,
+        backgroundColor: palette.bg,
+        borderWidth: 1,
+        borderColor: palette.border,
+      }}
+    >
+      <Text
+        style={{
+          fontSize: 12,
+          fontWeight: '700',
+          color: palette.label,
+          letterSpacing: 1,
+        }}
+      >
+        {title}
       </Text>
       <Text
         style={{
-          fontSize: 16,
-          fontWeight: '600',
+          fontSize: getResponsiveValue(22, 26, 28),
+          fontWeight: '800',
           color: COLORS.text.primary,
-          lineHeight: 22,
+          marginTop: 4,
         }}
       >
-        {value}
+        {countdownLabel}
       </Text>
+      {note ? (
+        <Text
+          style={{
+            marginTop: 6,
+            color: COLORS.text.primary,
+            fontWeight: '600',
+          }}
+        >
+          {note}
+        </Text>
+      ) : null}
+      {variant === 'arrival' ? (
+        <Text
+          style={{
+            marginTop: 4,
+            color: COLORS.text.secondary,
+            fontSize: 13,
+          }}
+        >
+          Players should arrive 1 hour before start time.
+        </Text>
+      ) : null}
     </View>
-  </View>
-);
+  );
+};
 
 const DAY_LABELS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 const MONTH_LABELS_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -222,6 +361,45 @@ const formatDateLabel = (date) => {
   return `${DAY_LABELS[date.getDay()]} • ${MONTH_LABELS_SHORT[date.getMonth()]} ${date.getDate()}`;
 };
 
+const parseEventDateTime = (dateStr, timeStr) => {
+  if (!dateStr || !timeStr) return null;
+
+  const normalizedTime = `${timeStr}`.replace(/[–—]/g, '-');
+  const primaryMatch = normalizedTime.match(/(\d{1,2}):(\d{2})\s*(AM|PM)?/i);
+  const meridiemMatch = normalizedTime.match(/(AM|PM)/i);
+  if (!primaryMatch) return null;
+
+  const [yearStr, monthStr, dayStr] = dateStr.split('-') || [];
+  const year = Number(yearStr);
+  const monthIndex = Number(monthStr) - 1;
+  const day = Number(dayStr);
+  if (
+    Number.isNaN(year) ||
+    Number.isNaN(monthIndex) ||
+    Number.isNaN(day) ||
+    monthIndex < 0 ||
+    monthIndex > 11
+  ) {
+    return null;
+  }
+
+  let hours = Number(primaryMatch[1]);
+  const minutes = Number(primaryMatch[2]);
+  if (Number.isNaN(hours) || Number.isNaN(minutes)) return null;
+  const meridiem = (primaryMatch[3] || meridiemMatch?.[1] || '').toUpperCase();
+  if (meridiem === 'PM' && hours < 12) hours += 12;
+  if (meridiem === 'AM' && hours === 12) hours = 0;
+
+  const date = new Date(year, monthIndex, day, hours, minutes, 0, 0);
+  if (Number.isNaN(date.getTime())) return null;
+  return date;
+};
+
+const formatTimeLabel = (date) => {
+  if (!(date instanceof Date) || Number.isNaN(date.getTime())) return '';
+  return date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+};
+
 const buildTodaySchedule = (matches = [], practices = [], referenceDate = new Date()) => {
   const todayKey = toDateKey(referenceDate);
   if (!todayKey) return [];
@@ -230,25 +408,36 @@ const buildTodaySchedule = (matches = [], practices = [], referenceDate = new Da
 
   matches.forEach((match, index) => {
     if (match?.date !== todayKey) return;
+    const startDateTime = parseEventDateTime(match?.date, match?.kickoff);
     events.push({
       id: `match-${match.date}-${match?.opponent || index}`,
       type: 'game',
       dateLabel,
       badge: match?.isHome ? 'Home Match' : 'Away Match',
-      badgeColors: {
-        bg: 'rgba(227,27,35,0.12)',
-        text: '#B91C1C',
-      },
+      badgeColors: match?.isHome
+        ? {
+            bg: 'rgba(16,185,129,0.15)',
+            text: '#0F9D58',
+          }
+        : {
+            bg: 'rgba(251,191,36,0.25)',
+            text: '#92400E',
+          },
       title: `${match?.isHome ? 'vs' : '@'} ${match?.opponent || 'Opponent TBA'}`,
       subtitle: match?.opponentClub || match?.seasonName,
       time: match?.kickoff || 'Time TBD',
       location: match?.location || 'Location TBD',
       note: match?.notes || match?.seasonName || '',
+      startDateTime,
+      arrivalDateTime: startDateTime
+        ? new Date(startDateTime.getTime() - 60 * 60 * 1000)
+        : null,
     });
   });
 
   practices.forEach((session, index) => {
     if (session?.date !== todayKey) return;
+    const startDateTime = parseEventDateTime(session?.date, session?.time);
     events.push({
       id: `practice-${session.date}-${index}`,
       type: 'practice',
@@ -263,13 +452,17 @@ const buildTodaySchedule = (matches = [], practices = [], referenceDate = new Da
       time: session?.time || 'Time TBD',
       location: session?.location || 'Location TBD',
       note: session?.address || '',
+      startDateTime,
+      arrivalDateTime: startDateTime
+        ? new Date(startDateTime.getTime() - 60 * 60 * 1000)
+        : null,
     });
   });
 
   return events;
 };
 
-const TodaySection = ({ events }) => {
+const TodaySection = ({ events, onLocationPress }) => {
   if (!events?.length) return null;
   const dateLabel = events[0]?.dateLabel;
 
@@ -323,74 +516,122 @@ const TodaySection = ({ events }) => {
           {dateLabel}
         </Text>
 
-        {events.map((event, index) => (
-          <View
-            key={event.id}
-            style={{
-              marginTop: index === 0 ? 0 : SPACING.xl,
-              paddingTop: index === 0 ? 0 : SPACING.md,
-              borderTopWidth: index === 0 ? 0 : StyleSheet.hairlineWidth,
-              borderTopColor: 'rgba(0,0,0,0.08)',
-            }}
-          >
+        {events.map((event, index) => {
+          const kickoffLabel = formatTimeLabel(event.startDateTime);
+          const arrivalLabel = formatTimeLabel(event.arrivalDateTime);
+          return (
             <View
+              key={event.id}
               style={{
-                alignSelf: 'flex-start',
-                paddingHorizontal: SPACING.md,
-                paddingVertical: 4,
-                borderRadius: 999,
-                backgroundColor: event.badgeColors.bg,
-                marginBottom: SPACING.sm,
+                marginTop: index === 0 ? 0 : SPACING.xl,
+                paddingTop: index === 0 ? 0 : SPACING.md,
+                borderTopWidth: index === 0 ? 0 : StyleSheet.hairlineWidth,
+                borderTopColor: 'rgba(0,0,0,0.08)',
               }}
             >
+              <View
+                style={{
+                  alignSelf: 'flex-start',
+                  paddingHorizontal: SPACING.md,
+                  paddingVertical: 4,
+                  borderRadius: 999,
+                  backgroundColor: event.badgeColors.bg,
+                  marginBottom: SPACING.sm,
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 12,
+                    fontWeight: '700',
+                    color: event.badgeColors.text,
+                    letterSpacing: 1,
+                  }}
+                >
+                  {event.badge}
+                </Text>
+              </View>
               <Text
                 style={{
-                  fontSize: 12,
+                  fontSize: 20,
                   fontWeight: '700',
-                  color: event.badgeColors.text,
-                  letterSpacing: 1,
+                  color: COLORS.text.primary,
                 }}
               >
-                {event.badge}
+                {event.title}
               </Text>
+              {event.subtitle ? (
+                <Text
+                  style={{
+                    fontSize: 15,
+                    color: COLORS.text.secondary,
+                    marginTop: 2,
+                  }}
+                >
+                  {event.subtitle}
+                </Text>
+              ) : null}
+              <View style={{ marginTop: SPACING.md }}>
+                <TodayDetailRow icon="schedule" label="Time" value={event.time} />
+                <TodayDetailRow
+                  icon="place"
+                  label="Location"
+                  value={event.location}
+                  onPress={
+                    event.location && onLocationPress
+                      ? () => onLocationPress(event.location)
+                      : undefined
+                  }
+                />
+              </View>
+              {event.note ? (
+                <Text
+                  style={{
+                    marginTop: SPACING.sm,
+                    color: COLORS.text.secondary,
+                    lineHeight: 22,
+                  }}
+                >
+                  {event.note}
+                </Text>
+              ) : null}
+
+              {event.arrivalDateTime ? (
+                <CountdownTimer
+                  targetDate={event.arrivalDateTime}
+                  title="ARRIVAL COUNTDOWN"
+                  note={
+                    arrivalLabel
+                      ? `Arrive by ${arrivalLabel}${
+                          kickoffLabel ? ` • Kickoff ${kickoffLabel}` : ''
+                        }`
+                      : ''
+                  }
+                  variant="arrival"
+                  highlightDate={event.startDateTime}
+                />
+              ) : (
+                <Text
+                  style={{
+                    marginTop: SPACING.lg,
+                    color: COLORS.text.secondary,
+                    fontSize: 13,
+                  }}
+                >
+                  Players should arrive 1 hour before start time.
+                </Text>
+              )}
+
+              {event.startDateTime ? (
+                <CountdownTimer
+                  targetDate={event.startDateTime}
+                  title="KICKOFF COUNTDOWN"
+                  note={kickoffLabel ? `Kickoff ${kickoffLabel}` : ''}
+                  variant="kickoff"
+                />
+              ) : null}
             </View>
-            <Text
-              style={{
-                fontSize: 20,
-                fontWeight: '700',
-                color: COLORS.text.primary,
-              }}
-            >
-              {event.title}
-            </Text>
-            {event.subtitle ? (
-              <Text
-                style={{
-                  fontSize: 15,
-                  color: COLORS.text.secondary,
-                  marginTop: 2,
-                }}
-              >
-                {event.subtitle}
-              </Text>
-            ) : null}
-            <View style={{ marginTop: SPACING.md }}>
-              <TodayDetailRow icon="schedule" label="Time" value={event.time} />
-              <TodayDetailRow icon="place" label="Location" value={event.location} />
-            </View>
-            {event.note ? (
-              <Text
-                style={{
-                  marginTop: SPACING.sm,
-                  color: COLORS.text.secondary,
-                  lineHeight: 22,
-                }}
-              >
-                {event.note}
-              </Text>
-            ) : null}
-          </View>
-        ))}
+          );
+        })}
       </View>
     </MotiView>
   );
@@ -402,6 +643,13 @@ const navigateToSlug = (router, slug) => {
   } else {
     router.replace({ pathname: '/', params: { page: slug } });
   }
+};
+
+const openLocationInMaps = (location) => {
+  if (!location) return;
+  const query = encodeURIComponent(location.trim());
+  const url = `https://www.google.com/maps/search/?api=1&query=${query}`;
+  Linking.openURL(url).catch((err) => console.warn('Unable to open maps link', err));
 };
 
 export default function Hero() {
@@ -545,7 +793,7 @@ export default function Hero() {
             >
               {HERO_CONTENT.subheadline}
             </Text>
-            <TodaySection events={todaySchedule} />
+            <TodaySection events={todaySchedule} onLocationPress={openLocationInMaps} />
           </MotiView>
         </View>
       </View>
