@@ -13,6 +13,8 @@ import { getResponsiveValue, isDesktop } from '../utils/responsive';
 
 const { width, height } = Dimensions.get('window');
 const HAWKS_LOGO = require('../assets/images/logo/hawks.png');
+const CARD_TEXT_PRIMARY = '#0B1220';
+const CARD_TEXT_SECONDARY = '#1F2937';
 
 const TypewriterText = ({ text, delay = 0, style }) => {
   return (
@@ -166,6 +168,7 @@ const TodayDetailRow = ({ icon, label, value, onPress }) => {
   const containerProps = onPress
     ? { onPress, activeOpacity: 0.75 }
     : {};
+  const detailSpacing = getResponsiveValue(SPACING.sm, SPACING.md, SPACING.md);
 
   return (
     <Container
@@ -173,7 +176,7 @@ const TodayDetailRow = ({ icon, label, value, onPress }) => {
       style={{
         flexDirection: 'row',
         alignItems: 'flex-start',
-        marginBottom: SPACING.md,
+        marginBottom: detailSpacing,
       }}
     >
       <View
@@ -194,7 +197,7 @@ const TodayDetailRow = ({ icon, label, value, onPress }) => {
           style={{
             fontSize: 13,
             textTransform: 'uppercase',
-            color: COLORS.text.secondary,
+            color: CARD_TEXT_SECONDARY,
             fontWeight: '600',
           }}
         >
@@ -204,7 +207,7 @@ const TodayDetailRow = ({ icon, label, value, onPress }) => {
           style={{
             fontSize: 16,
             fontWeight: '600',
-            color: onPress ? COLORS.primary : COLORS.text.primary,
+            color: onPress ? COLORS.primary : CARD_TEXT_PRIMARY,
             lineHeight: 22,
             textDecorationLine: onPress ? 'underline' : 'none',
           }}
@@ -244,6 +247,9 @@ const CountdownTimer = ({
   pastLabel,
 }) => {
   const [parts, setParts] = useState(() => getCountdownParts(targetDate));
+  const blockMarginTop = getResponsiveValue(SPACING.md, SPACING.lg, SPACING.lg);
+  const blockPaddingHorizontal = getResponsiveValue(SPACING.md, SPACING.lg, SPACING.lg);
+  const blockPaddingVertical = getResponsiveValue(SPACING.md, SPACING.md, SPACING.lg);
 
   useEffect(() => {
     if (!targetDate) return undefined;
@@ -291,9 +297,9 @@ const CountdownTimer = ({
   return (
     <View
       style={{
-        marginTop: SPACING.lg,
-        paddingHorizontal: SPACING.lg,
-        paddingVertical: SPACING.md,
+        marginTop: blockMarginTop,
+        paddingHorizontal: blockPaddingHorizontal,
+        paddingVertical: blockPaddingVertical,
         borderRadius: 20,
         backgroundColor: palette.bg,
         borderWidth: 1,
@@ -314,7 +320,7 @@ const CountdownTimer = ({
         style={{
           fontSize: getResponsiveValue(22, 26, 28),
           fontWeight: '800',
-          color: COLORS.text.primary,
+          color: CARD_TEXT_PRIMARY,
           marginTop: 4,
         }}
       >
@@ -324,7 +330,7 @@ const CountdownTimer = ({
         <Text
           style={{
             marginTop: 6,
-            color: COLORS.text.primary,
+            color: CARD_TEXT_PRIMARY,
             fontWeight: '600',
           }}
         >
@@ -335,7 +341,7 @@ const CountdownTimer = ({
         <Text
           style={{
             marginTop: 4,
-            color: COLORS.text.secondary,
+            color: CARD_TEXT_SECONDARY,
             fontSize: 13,
           }}
         >
@@ -466,6 +472,9 @@ const buildTodaySchedule = (matches = [], practices = [], referenceDate = new Da
 const TodaySection = ({ events, onLocationPress }) => {
   if (!events?.length) return null;
   const dateLabel = events[0]?.dateLabel;
+  const cardPadding = getResponsiveValue(SPACING.lg, SPACING.xl, SPACING.xl);
+  const cardRadius = getResponsiveValue(24, 28, 32);
+  const entryGap = getResponsiveValue(SPACING.lg, SPACING.xl, SPACING.xl);
 
   return (
     <MotiView
@@ -488,8 +497,8 @@ const TodaySection = ({ events, onLocationPress }) => {
         style={{
           width: '100%',
           backgroundColor: 'rgba(255,255,255,0.95)',
-          borderRadius: 28,
-          padding: SPACING.xl,
+          borderRadius: cardRadius,
+          padding: cardPadding,
           borderWidth: 1,
           borderColor: 'rgba(212,175,55,0.45)',
           ...SHADOWS.large,
@@ -510,7 +519,7 @@ const TodaySection = ({ events, onLocationPress }) => {
           style={{
             fontSize: 20,
             fontWeight: '700',
-            color: COLORS.text.primary,
+            color: CARD_TEXT_PRIMARY,
             marginBottom: SPACING.lg,
           }}
         >
@@ -524,7 +533,7 @@ const TodaySection = ({ events, onLocationPress }) => {
             <View
               key={event.id}
               style={{
-                marginTop: index === 0 ? 0 : SPACING.xl,
+                marginTop: index === 0 ? 0 : entryGap,
                 paddingTop: index === 0 ? 0 : SPACING.md,
                 borderTopWidth: index === 0 ? 0 : StyleSheet.hairlineWidth,
                 borderTopColor: 'rgba(0,0,0,0.08)',
@@ -538,14 +547,14 @@ const TodaySection = ({ events, onLocationPress }) => {
                   ...StyleSheet.absoluteFillObject,
                   justifyContent: 'center',
                   alignItems: 'center',
-                  opacity: 0.03,
+                  opacity: 0.05,
                 }}
               >
                 <Image
                   source={HAWKS_LOGO}
                   resizeMode="contain"
                   style={{
-                    width: isDesktop() ? '90%' : '100%',
+                    width: isDesktop() ? '95%' : '100%',
                     aspectRatio: 1,
                   }}
                 />
@@ -575,7 +584,7 @@ const TodaySection = ({ events, onLocationPress }) => {
                 style={{
                   fontSize: 20,
                   fontWeight: '700',
-                  color: COLORS.text.primary,
+                  color: CARD_TEXT_PRIMARY,
                 }}
               >
                 {event.title}
@@ -584,7 +593,7 @@ const TodaySection = ({ events, onLocationPress }) => {
                 <Text
                   style={{
                     fontSize: 15,
-                    color: COLORS.text.secondary,
+                    color: CARD_TEXT_SECONDARY,
                     marginTop: 2,
                   }}
                 >
@@ -608,7 +617,7 @@ const TodaySection = ({ events, onLocationPress }) => {
                 <Text
                   style={{
                     marginTop: SPACING.sm,
-                    color: COLORS.text.secondary,
+                    color: CARD_TEXT_SECONDARY,
                     lineHeight: 22,
                   }}
                 >
@@ -634,7 +643,7 @@ const TodaySection = ({ events, onLocationPress }) => {
                 <Text
                   style={{
                     marginTop: SPACING.lg,
-                    color: COLORS.text.secondary,
+                    color: CARD_TEXT_SECONDARY,
                     fontSize: 13,
                   }}
                 >
@@ -676,6 +685,10 @@ const openLocationInMaps = (location) => {
 export default function Hero() {
   const router = useRouter();
   const heroHeight = getResponsiveValue(height * 0.8, height * 0.7, height * 0.9);
+  const mobileExtraHeight = isDesktop() ? 0 : height * 0.35;
+  const heroMinHeight = heroHeight + mobileExtraHeight;
+  const heroPaddingTop = getResponsiveValue(SPACING.xl, SPACING.xxl, SPACING.xxl);
+  const heroPaddingBottom = isDesktop() ? SPACING.xxl : SPACING.xxl * 1.5;
   const allMatches = useMemo(() => getAllMatches(), []);
   const todaySchedule = useMemo(
     () => buildTodaySchedule(allMatches, INDOOR_PRACTICE_SCHEDULE),
@@ -683,14 +696,15 @@ export default function Hero() {
   );
 
   return (
-
       <View style={{
-        minHeight: heroHeight,
+        minHeight: heroMinHeight,
         justifyContent: 'center',
         alignItems: 'center',
         paddingHorizontal: getResponsiveValue(16, 24, 32),
-        paddingVertical: SPACING.xxl,
-        position: 'relative'
+        paddingTop: heroPaddingTop,
+        paddingBottom: heroPaddingBottom,
+        position: 'relative',
+        width: '100%',
       }}>
         {/* Animated Soccer Ball Cluster */}
         <SoccerBallCluster />
