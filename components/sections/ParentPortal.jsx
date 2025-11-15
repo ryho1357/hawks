@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { ScrollView, View, Text, TextInput, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import { COLORS, SPACING, SHADOWS, BORDER_RADIUS, TYPOGRAPHY } from '../../constants/design-system';
 import Container from '../ui/Container';
 import Button from '../ui/Button';
+import { useAuth } from '../../contexts/AuthContext';
 
 const AccessRow = ({ icon, title, description }) => (
   <View
@@ -53,11 +55,60 @@ const AccessRow = ({ icon, title, description }) => (
   </View>
 );
 
+const TEMP_ACCESS_CODES = {
+  coach: 'hawks-coach',
+  family: 'hawks-family',
+};
+
+const messageToneColor = {
+  success: COLORS.status.completed,
+  error: COLORS.primary,
+  info: COLORS.text.secondary,
+};
+
 export default function ParentPortal() {
   const [credentials, setCredentials] = useState({ username: '', password: '' });
+  const [loginMessage, setLoginMessage] = useState(null);
+  const router = useRouter();
+  const { authenticated, role, login, logout } = useAuth();
 
   const updateField = (key, value) => {
     setCredentials((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const isCoach = role === 'coach';
+
+  const handleLogin = () => {
+    setLoginMessage(null);
+    if (!credentials.username || !credentials.password) {
+      setLoginMessage({
+        text: 'Enter the email plus temporary code provided by the staff.',
+        tone: 'error',
+      });
+      return;
+    }
+
+    const normalized = credentials.password.trim().toLowerCase();
+    if (normalized === TEMP_ACCESS_CODES.coach) {
+      login({ email: credentials.username, role: 'coach' });
+      setLoginMessage({ text: 'Coach access granted. Evaluation dashboard unlocked.', tone: 'success' });
+      router.replace('/evaluations');
+    } else if (normalized === TEMP_ACCESS_CODES.family) {
+      login({ email: credentials.username, role: 'family' });
+      setLoginMessage({ text: 'Welcome back! Player content unlocked.', tone: 'success' });
+      router.replace('/evaluations');
+    } else {
+      setLoginMessage({
+        text: 'Access code not recognized. Contact staff for updated credentials.',
+        tone: 'error',
+      });
+    }
+  };
+
+  const handleLogout = () => {
+    logout();
+    setCredentials({ username: '', password: '' });
+    setLoginMessage({ text: 'You have been signed out.', tone: 'info' });
   };
 
   return (
@@ -157,89 +208,137 @@ export default function ParentPortal() {
               borderRadius: BORDER_RADIUS.xl,
               padding: SPACING.xl,
               ...SHADOWS.small,
+              gap: SPACING.lg,
             }}
           >
-            <Text
-              style={{
-                fontSize: TYPOGRAPHY.sizes.md,
-                color: COLORS.text.secondary,
-                marginBottom: SPACING.lg,
-              }}
-            >
-              Portal access is limited to current Hawks families. Credentials will be distributed by staff once secure authentication launches.
-            </Text>
-
-            <View style={{ gap: SPACING.lg }}>
-              <View>
-                <Text
-                  style={{
-                    fontSize: TYPOGRAPHY.sizes.sm,
-                    color: COLORS.text.secondary,
-                    marginBottom: SPACING.xs,
-                    textTransform: 'uppercase',
-                    letterSpacing: 1,
-                  }}
-                >
-                  Username
-                </Text>
-                <TextInput
-                  placeholder="family@hawks.com"
-                  placeholderTextColor={COLORS.text.secondary + '80'}
-                  value={credentials.username}
-                  onChangeText={(text) => updateField('username', text)}
-                  style={{
-                    borderWidth: 1,
-                    borderColor: COLORS.background.tertiary,
-                    borderRadius: BORDER_RADIUS.lg,
-                    padding: SPACING.md,
-                    fontSize: TYPOGRAPHY.sizes.md,
-                    color: COLORS.text.primary,
-                    backgroundColor: COLORS.background.secondary,
-                  }}
-                />
-              </View>
-
-              <View>
-                <Text
-                  style={{
-                    fontSize: TYPOGRAPHY.sizes.sm,
-                    color: COLORS.text.secondary,
-                    marginBottom: SPACING.xs,
-                    textTransform: 'uppercase',
-                    letterSpacing: 1,
-                  }}
-                >
-                  Password
-                </Text>
-                <TextInput
-                  placeholder="••••••••"
-                  placeholderTextColor={COLORS.text.secondary + '80'}
-                  secureTextEntry
-                  value={credentials.password}
-                  onChangeText={(text) => updateField('password', text)}
-                  style={{
-                    borderWidth: 1,
-                    borderColor: COLORS.background.tertiary,
-                    borderRadius: BORDER_RADIUS.lg,
-                    padding: SPACING.md,
-                    fontSize: TYPOGRAPHY.sizes.md,
-                    color: COLORS.text.primary,
-                    backgroundColor: COLORS.background.secondary,
-                  }}
-                />
-              </View>
-
-              <Button
-                title="Portal Coming Soon"
-                disabled
+            <View style={{ gap: SPACING.sm }}>
+              <Text
                 style={{
-                  backgroundColor: COLORS.text.secondary + '40',
-                  borderColor: 'transparent',
-                  borderRadius: BORDER_RADIUS.round,
+                  fontSize: TYPOGRAPHY.sizes.md,
+                  color: COLORS.text.secondary,
                 }}
-                textStyle={{ color: COLORS.text.white }}
-              />
+              >
+                Portal access is limited to active Hawks families. Use the temporary codes while we
+                wire up Appwrite auth: <Text style={{ fontWeight: TYPOGRAPHY.weights.semibold }}>hawks-family</Text> for
+                guardians or <Text style={{ fontWeight: TYPOGRAPHY.weights.semibold }}>hawks-coach</Text> for staff.
+              </Text>
+              {!!loginMessage && (
+                <Text
+                  style={{
+                    color: messageToneColor[loginMessage.tone || 'info'],
+                    fontSize: TYPOGRAPHY.sizes.sm,
+                  }}
+                >
+                  {loginMessage.text}
+                </Text>
+              )}
             </View>
+
+            {!authenticated ? (
+              <View style={{ gap: SPACING.lg }}>
+                <View>
+                  <Text
+                    style={{
+                      fontSize: TYPOGRAPHY.sizes.sm,
+                      color: COLORS.text.secondary,
+                      marginBottom: SPACING.xs,
+                      textTransform: 'uppercase',
+                      letterSpacing: 1,
+                    }}
+                  >
+                    Email
+                  </Text>
+                  <TextInput
+                    placeholder="family@hawks.com"
+                    placeholderTextColor={COLORS.text.secondary + '80'}
+                    value={credentials.username}
+                    onChangeText={(text) => updateField('username', text)}
+                    style={{
+                      borderWidth: 1,
+                      borderColor: COLORS.background.tertiary,
+                      borderRadius: BORDER_RADIUS.lg,
+                      padding: SPACING.md,
+                      fontSize: TYPOGRAPHY.sizes.md,
+                      color: COLORS.text.primary,
+                      backgroundColor: COLORS.background.secondary,
+                    }}
+                  />
+                </View>
+
+                <View>
+                  <Text
+                    style={{
+                      fontSize: TYPOGRAPHY.sizes.sm,
+                      color: COLORS.text.secondary,
+                      marginBottom: SPACING.xs,
+                      textTransform: 'uppercase',
+                      letterSpacing: 1,
+                    }}
+                  >
+                    Access Code
+                  </Text>
+                  <TextInput
+                    placeholder="Temporary access code"
+                    placeholderTextColor={COLORS.text.secondary + '80'}
+                    secureTextEntry
+                    value={credentials.password}
+                    onChangeText={(text) => updateField('password', text)}
+                    style={{
+                      borderWidth: 1,
+                      borderColor: COLORS.background.tertiary,
+                      borderRadius: BORDER_RADIUS.lg,
+                      padding: SPACING.md,
+                      fontSize: TYPOGRAPHY.sizes.md,
+                      color: COLORS.text.primary,
+                      backgroundColor: COLORS.background.secondary,
+                    }}
+                  />
+                </View>
+
+                <Button
+                  title="Sign In"
+                  onPress={handleLogin}
+                  style={{
+                    borderRadius: BORDER_RADIUS.round,
+                  }}
+                />
+              </View>
+            ) : (
+              <View
+                style={{
+                  padding: SPACING.lg,
+                  backgroundColor: COLORS.background.secondary,
+                  borderRadius: BORDER_RADIUS.lg,
+                  gap: SPACING.md,
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: TYPOGRAPHY.sizes.lg,
+                    fontWeight: TYPOGRAPHY.weights.semibold,
+                    color: COLORS.text.primary,
+                  }}
+                >
+                  Logged in as {isCoach ? 'Coach' : 'Family'} Account
+                </Text>
+                <Text style={{ color: COLORS.text.secondary }}>
+                  {isCoach
+                    ? 'Head to the evaluation dashboard to work through charts, focus badges, and quick edit tools.'
+                    : 'Open the secure evaluation dashboard to view your player card and notes.'}
+                </Text>
+                <Button
+                  title="Open Player Evaluations"
+                  onPress={() => router.push('/evaluations')}
+                  style={{ borderRadius: BORDER_RADIUS.round }}
+                />
+                <Button
+                  title="Sign Out"
+                  variant="secondary"
+                  onPress={handleLogout}
+                  style={{ borderRadius: BORDER_RADIUS.round }}
+                />
+              </View>
+            )}
           </View>
         </View>
       </Container>

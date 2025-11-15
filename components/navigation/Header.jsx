@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { View, Text, TouchableOpacity, Image, Animated } from 'react-native';
 import { useRouter, usePathname, useLocalSearchParams } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -6,6 +6,7 @@ import { COLORS, SHADOWS, SPACING } from '../../constants/design-system';
 import { NAVIGATION_ITEMS } from '../../constants/navigation';
 import { isDesktop, isMobile } from '../../utils/responsive';
 import Container from '../ui/Container';
+import { useAuth } from '../../contexts/AuthContext';
 
 const navigateToSlug = (router, slug) => {
   if (slug === 'home') {
@@ -22,6 +23,7 @@ export default function Header() {
   const { page } = useLocalSearchParams();
   const mobileView = isMobile();
   const desktopView = isDesktop();
+  const { authenticated } = useAuth();
 
   const derivedSlug = React.useMemo(() => {
     if (pathname === '/') {
@@ -31,6 +33,13 @@ export default function Header() {
     const normalized = pathname.replace(/^\/+/, '').replace(/\/+$/, '');
     return normalized.length ? normalized : 'home';
   }, [pathname, page]);
+
+  const navigationItems = useMemo(() => {
+    if (authenticated) {
+      return NAVIGATION_ITEMS;
+    }
+    return NAVIGATION_ITEMS.filter((item) => item.slug !== 'evaluations');
+  }, [authenticated]);
 
   const handleNavigation = (slug) => {
     navigateToSlug(router, slug);
@@ -150,7 +159,7 @@ export default function Header() {
             justifyContent: desktopView ? 'center' : 'flex-start',
             alignItems: 'center'
           }}>
-            {NAVIGATION_ITEMS.map((item) => (
+            {navigationItems.map((item) => (
               <TouchableOpacity
                 key={item.name}
                 onPress={() => handleNavigation(item.slug)}

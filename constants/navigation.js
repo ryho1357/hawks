@@ -4,6 +4,7 @@ export const NAVIGATION_ITEMS = [
   { name: 'Team', slug: 'team', icon: 'group' },
   { name: 'Sponsors', slug: 'sponsors', icon: 'favorite' },
   { name: 'Portal', slug: 'portal', icon: 'lock' },
+  { name: 'Evaluations', slug: 'evaluations', icon: 'insights' },
   { name: 'Contact', slug: 'contact', icon: 'mail' },
 ];
 
@@ -13,6 +14,7 @@ export const FOOTER_LINKS = {
     { name: 'Team Roster', slug: 'team' },
     { name: 'Sponsors', slug: 'sponsors' },
     { name: 'Portal', slug: 'portal' },
+    { name: 'Evaluations', slug: 'evaluations' },
     { name: 'Contact', slug: 'contact' },
   ],
   resources: [
