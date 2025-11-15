@@ -1,6 +1,6 @@
 // app/hero.jsx - Enhanced version
 import React, { useMemo, useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, Dimensions, StyleSheet, Linking, Image } from 'react-native';
+import { View, Text, TouchableOpacity, Dimensions, StyleSheet, Linking, Image, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -779,10 +779,10 @@ export default function Hero() {
       ? 240 + (scheduleCount - 1) * 160
       : 160;
   const heroMinHeight = heroHeight + mobileExtraHeight + cardHeightEstimate;
-  const heroPaddingTop = getResponsiveValue(SPACING.xl, SPACING.xxl, SPACING.xxl);
+  const heroPaddingTop = getResponsiveValue(SPACING.lg, SPACING.xl, SPACING.xxl);
   const heroPaddingBottom = desktop
     ? SPACING.xxl
-    : SPACING.xxl + cardHeightEstimate * 0.35;
+    : SPACING.xl + cardHeightEstimate * 0.25;
   const horizontalPadding = getResponsiveValue(16, 24, 32);
   const contentMaxWidth = desktop ? 900 : Math.max(width - 72, 320);
   const titleWrapperMaxWidth = desktop ? 720 : '100%';
@@ -790,146 +790,162 @@ export default function Hero() {
   const useCompactCard = true;
 
   return (
-      <View style={{
-        minHeight: heroMinHeight,
-        justifyContent: 'center',
-        alignItems: 'center',
-        paddingHorizontal: horizontalPadding,
-        paddingTop: heroPaddingTop,
-        paddingBottom: heroPaddingBottom,
-        position: 'relative',
-        width: '100%',
-      }}>
-        {/* Animated Soccer Ball Cluster */}
-        <SoccerBallCluster />
-
-        {/* Main Content */}
-        <View style={{
-          maxWidth: contentMaxWidth,
+    <View style={{ flex: 1 }}>
+      <LinearGradient
+        colors={['#072f12', '#0c5c1f', '#0a4418']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
+        style={StyleSheet.absoluteFillObject}
+      />
+      <ScrollView
+        style={{ flex: 1 }}
+        bounces
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{
+          minHeight: heroMinHeight,
+          flexGrow: 1,
+          justifyContent: 'center',
           alignItems: 'center',
-          zIndex: 10
-        }}>
-          {/* Animated Title */}
-          <MotiView
-            from={{
-              opacity: 0,
-              translateY: -30,
+          paddingHorizontal: horizontalPadding,
+          paddingTop: heroPaddingTop,
+          paddingBottom: heroPaddingBottom,
+          width: '100%',
+        }}
+      >
+        <View style={{ width: '100%', alignItems: 'center', position: 'relative' }}>
+          {/* Animated Soccer Ball Cluster */}
+          <SoccerBallCluster />
+
+          {/* Main Content */}
+          <View
+            style={{
+              maxWidth: contentMaxWidth,
+              alignItems: 'center',
+              zIndex: 10,
             }}
-            animate={{
-              opacity: 1,
-              translateY: 0,
-            }}
-            transition={{
-              duration: 1000,
-              type: 'spring',
-              damping: 15,
-            }}
-            style={{ width: '100%' }}
           >
-            <View
+            {/* Animated Title */}
+            <MotiView
+              from={{
+                opacity: 0,
+                translateY: -30,
+              }}
+              animate={{
+                opacity: 1,
+                translateY: 0,
+              }}
+              transition={{
+                duration: 1000,
+                type: 'spring',
+                damping: 15,
+              }}
+              style={{ width: '100%' }}
+            >
+              <View
+                style={{
+                  alignSelf: 'center',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  borderRadius: 28,
+                  paddingVertical: getResponsiveValue(SPACING.sm, SPACING.md, SPACING.md),
+                  paddingHorizontal: getResponsiveValue(18, 24, 32),
+                  maxWidth: titleWrapperMaxWidth,
+                  borderWidth: 1,
+                  borderColor: 'rgba(255,255,255,0.25)',
+                  ...SHADOWS.large,
+                }}
+              >
+                <LinearGradient
+                  colors={['rgba(178,34,34,0.95)', 'rgba(127,29,29,0.92)']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={{
+                    ...StyleSheet.absoluteFillObject,
+                  }}
+                />
+                <MotiView
+                  pointerEvents="none"
+                  from={{ opacity: 0.35, scale: 0.95 }}
+                  animate={{ opacity: 0.7, scale: 1 }}
+                  transition={{
+                    loop: true,
+                    repeatReverse: true,
+                    duration: 2400,
+                    type: 'timing',
+                  }}
+                  style={{
+                    ...StyleSheet.absoluteFillObject,
+                    borderRadius: 28,
+                    backgroundColor: 'rgba(255,255,255,0.08)',
+                  }}
+                />
+                <MaterialIcons
+                  name="sports-soccer"
+                  size={desktop ? 220 : 180}
+                  color="rgba(255,255,255,0.12)"
+                  style={{
+                    position: 'absolute',
+                    top: desktop ? -40 : -50,
+                    right: desktop ? -30 : -60,
+                    transform: [{ rotate: '-15deg' }],
+                  }}
+                />
+                <TypewriterText
+                  text={HERO_CONTENT.headline}
+                  style={{
+                    color: COLORS.text.white,
+                    textShadowColor: 'rgba(255, 255, 255, 0.65)',
+                    textShadowOffset: { width: 0, height: 0 },
+                    textShadowRadius: 12,
+                  }}
+                />
+              </View>
+            </MotiView>
+
+            {/* Animated Subtitle */}
+            <MotiView
+              from={{
+                opacity: 0,
+                translateY: 20,
+              }}
+              animate={{
+                opacity: 1,
+                translateY: 0,
+              }}
+              transition={{
+                delay: 800,
+                duration: 1000,
+                type: 'spring',
+                damping: 20,
+              }}
               style={{
-                alignSelf: 'center',
-                position: 'relative',
-                overflow: 'hidden',
-                borderRadius: 28,
-                paddingVertical: SPACING.md,
-                paddingHorizontal: getResponsiveValue(20, 28, 36),
-                maxWidth: titleWrapperMaxWidth,
-                borderWidth: 1,
-                borderColor: 'rgba(255,255,255,0.25)',
-                ...SHADOWS.large,
+                marginTop: SPACING.md,
+                marginBottom: SPACING.lg,
+                width: '100%',
+                alignItems: 'center',
               }}
             >
-              <LinearGradient
-                colors={['rgba(178,34,34,0.95)', 'rgba(127,29,29,0.92)']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={{
-                  ...StyleSheet.absoluteFillObject,
-                }}
-              />
-              <MotiView
-                pointerEvents="none"
-                from={{ opacity: 0.35, scale: 0.95 }}
-                animate={{ opacity: 0.7, scale: 1 }}
-                transition={{
-                  loop: true,
-                  repeatReverse: true,
-                  duration: 2400,
-                  type: 'timing',
-                }}
-                style={{
-                  ...StyleSheet.absoluteFillObject,
-                  borderRadius: 28,
-                  backgroundColor: 'rgba(255,255,255,0.08)',
-                }}
-              />
-              <MaterialIcons
-                name="sports-soccer"
-                size={desktop ? 220 : 180}
-                color="rgba(255,255,255,0.12)"
-                style={{
-                  position: 'absolute',
-                  top: desktop ? -40 : -50,
-                  right: desktop ? -30 : -60,
-                  transform: [{ rotate: '-15deg' }],
-                }}
-              />
-              <TypewriterText
-                text={HERO_CONTENT.headline}
+              <Text
                 style={{
                   color: COLORS.text.white,
-                  textShadowColor: 'rgba(255, 255, 255, 0.65)',
-                  textShadowOffset: { width: 0, height: 0 },
-                  textShadowRadius: 12,
+                  fontSize: getResponsiveValue(18, 20, 22),
+                  textAlign: 'center',
+                  fontWeight: '500',
+                  marginBottom: SPACING.md,
+                  maxWidth: subtitleMaxWidth,
                 }}
+              >
+                {HERO_CONTENT.subheadline}
+              </Text>
+              <TodaySection
+                events={todaySchedule}
+                onLocationPress={openLocationInMaps}
+                compact={useCompactCard}
               />
-            </View>
-          </MotiView>
-
-          {/* Animated Subtitle */}
-          <MotiView
-            from={{
-              opacity: 0,
-              translateY: 20,
-            }}
-            animate={{
-              opacity: 1,
-              translateY: 0,
-            }}
-            transition={{
-              delay: 800,
-              duration: 1000,
-              type: 'spring',
-              damping: 20,
-            }}
-            style={{
-              marginTop: SPACING.lg,
-              marginBottom: SPACING.xl,
-              width: '100%',
-              alignItems: 'center',
-            }}
-          >
-            <Text
-              style={{
-                color: COLORS.text.white,
-                fontSize: getResponsiveValue(18, 20, 22),
-                textAlign: 'center',
-                fontWeight: '500',
-                marginBottom: SPACING.lg,
-                maxWidth: subtitleMaxWidth,
-              }}
-            >
-              {HERO_CONTENT.subheadline}
-            </Text>
-            <TodaySection
-              events={todaySchedule}
-              onLocationPress={openLocationInMaps}
-              compact={useCompactCard}
-            />
-          </MotiView>
+            </MotiView>
+          </View>
         </View>
-      </View>
-
+      </ScrollView>
+    </View>
   );
 }
