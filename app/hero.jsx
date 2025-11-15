@@ -1,6 +1,6 @@
 // app/hero.jsx - Enhanced version
 import React, { useMemo, useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, Dimensions, StyleSheet, Linking } from 'react-native';
+import { View, Text, TouchableOpacity, Dimensions, StyleSheet, Linking, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -12,6 +12,7 @@ import { getResponsiveValue, isDesktop } from '../utils/responsive';
 
 
 const { width, height } = Dimensions.get('window');
+const HAWKS_LOGO = require('../assets/images/logo/hawks.png');
 
 const TypewriterText = ({ text, delay = 0, style }) => {
   return (
@@ -527,8 +528,28 @@ const TodaySection = ({ events, onLocationPress }) => {
                 paddingTop: index === 0 ? 0 : SPACING.md,
                 borderTopWidth: index === 0 ? 0 : StyleSheet.hairlineWidth,
                 borderTopColor: 'rgba(0,0,0,0.08)',
+                position: 'relative',
+                overflow: 'hidden',
               }}
             >
+              <View
+                pointerEvents="none"
+                style={{
+                  ...StyleSheet.absoluteFillObject,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  opacity: 0.03,
+                }}
+              >
+                <Image
+                  source={HAWKS_LOGO}
+                  resizeMode="contain"
+                  style={{
+                    width: isDesktop() ? '90%' : '100%',
+                    aspectRatio: 1,
+                  }}
+                />
+              </View>
               <View
                 style={{
                   alignSelf: 'flex-start',
