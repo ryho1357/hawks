@@ -163,39 +163,46 @@ const SoccerBallCluster = () => {
   );
 };
 
-const TodayDetailRow = ({ icon, label, value, onPress }) => {
+const TodayDetailRow = ({ icon, label, value, onPress, compact = false, style }) => {
   const Container = onPress ? TouchableOpacity : View;
   const containerProps = onPress
     ? { onPress, activeOpacity: 0.75 }
     : {};
-  const detailSpacing = getResponsiveValue(SPACING.sm, SPACING.md, SPACING.md);
+  const detailSpacing = compact
+    ? SPACING.xs
+    : getResponsiveValue(SPACING.sm, SPACING.md, SPACING.md);
+  const iconWrapperSize = compact ? 28 : getResponsiveValue(36, 40, 44);
+  const iconSize = compact ? 16 : 20;
 
   return (
     <Container
       {...containerProps}
-      style={{
-        flexDirection: 'row',
-        alignItems: 'flex-start',
-        marginBottom: detailSpacing,
-      }}
+      style={[
+        {
+          flexDirection: 'row',
+          alignItems: 'flex-start',
+          marginBottom: detailSpacing,
+        },
+        style,
+      ]}
     >
       <View
         style={{
-          width: 40,
-          height: 40,
-          borderRadius: 20,
+          width: iconWrapperSize,
+          height: iconWrapperSize,
+          borderRadius: iconWrapperSize / 2,
           backgroundColor: COLORS.primary + '10',
           alignItems: 'center',
           justifyContent: 'center',
           marginRight: SPACING.sm,
         }}
       >
-        <MaterialIcons name={icon} size={20} color={COLORS.primary} />
+        <MaterialIcons name={icon} size={iconSize} color={COLORS.primary} />
       </View>
       <View style={{ flex: 1 }}>
         <Text
           style={{
-            fontSize: 13,
+            fontSize: compact ? 12 : 13,
             textTransform: 'uppercase',
             color: CARD_TEXT_SECONDARY,
             fontWeight: '600',
@@ -205,10 +212,10 @@ const TodayDetailRow = ({ icon, label, value, onPress }) => {
         </Text>
         <Text
           style={{
-            fontSize: 16,
+            fontSize: compact ? 15 : 16,
             fontWeight: '600',
             color: onPress ? COLORS.primary : CARD_TEXT_PRIMARY,
-            lineHeight: 22,
+            lineHeight: compact ? 20 : 22,
             textDecorationLine: onPress ? 'underline' : 'none',
           }}
         >
@@ -245,11 +252,23 @@ const CountdownTimer = ({
   variant = 'kickoff',
   highlightDate,
   pastLabel,
+  compact = false,
+  style,
 }) => {
   const [parts, setParts] = useState(() => getCountdownParts(targetDate));
-  const blockMarginTop = getResponsiveValue(SPACING.md, SPACING.lg, SPACING.lg);
-  const blockPaddingHorizontal = getResponsiveValue(SPACING.md, SPACING.lg, SPACING.lg);
-  const blockPaddingVertical = getResponsiveValue(SPACING.md, SPACING.md, SPACING.lg);
+  const blockMarginTop = compact
+    ? SPACING.xs
+    : getResponsiveValue(SPACING.sm, SPACING.md, SPACING.md);
+  const blockPaddingHorizontal = compact
+    ? SPACING.sm
+    : getResponsiveValue(SPACING.sm, SPACING.md, SPACING.md);
+  const blockPaddingVertical = compact
+    ? SPACING.xs
+    : getResponsiveValue(SPACING.sm, SPACING.sm, SPACING.md);
+  const blockRadius = compact ? 12 : getResponsiveValue(14, 16, 18);
+  const countdownFontSize = compact ? 17 : getResponsiveValue(20, 24, 26);
+  const noteFontSize = compact ? 11.5 : 13;
+  const infoSpacing = compact ? 2 : 4;
 
   useEffect(() => {
     if (!targetDate) return undefined;
@@ -296,15 +315,19 @@ const CountdownTimer = ({
 
   return (
     <View
-      style={{
-        marginTop: blockMarginTop,
-        paddingHorizontal: blockPaddingHorizontal,
-        paddingVertical: blockPaddingVertical,
-        borderRadius: 20,
-        backgroundColor: palette.bg,
-        borderWidth: 1,
-        borderColor: palette.border,
-      }}
+      style={[
+        {
+          marginTop: blockMarginTop,
+          paddingHorizontal: blockPaddingHorizontal,
+          paddingVertical: blockPaddingVertical,
+          borderRadius: blockRadius,
+          backgroundColor: palette.bg,
+          borderWidth: 1,
+          borderColor: palette.border,
+          flex: compact ? 1 : undefined,
+        },
+        style,
+      ]}
     >
       <Text
         style={{
@@ -318,10 +341,10 @@ const CountdownTimer = ({
       </Text>
       <Text
         style={{
-          fontSize: getResponsiveValue(22, 26, 28),
-          fontWeight: '800',
+          fontSize: countdownFontSize,
+          fontWeight: '700',
           color: CARD_TEXT_PRIMARY,
-          marginTop: 4,
+          marginTop: infoSpacing,
         }}
       >
         {countdownLabel}
@@ -329,9 +352,10 @@ const CountdownTimer = ({
       {note ? (
         <Text
           style={{
-            marginTop: 6,
+            marginTop: infoSpacing,
             color: CARD_TEXT_PRIMARY,
             fontWeight: '600',
+            fontSize: noteFontSize,
           }}
         >
           {note}
@@ -340,9 +364,9 @@ const CountdownTimer = ({
       {variant === 'arrival' ? (
         <Text
           style={{
-            marginTop: 4,
+            marginTop: infoSpacing / 2,
             color: CARD_TEXT_SECONDARY,
-            fontSize: 13,
+            fontSize: compact ? 11 : 12,
           }}
         >
           Players should arrive 1 hour before start time.
@@ -469,12 +493,28 @@ const buildTodaySchedule = (matches = [], practices = [], referenceDate = new Da
   return events;
 };
 
-const TodaySection = ({ events, onLocationPress }) => {
+const TodaySection = ({ events, onLocationPress, compact = false }) => {
   if (!events?.length) return null;
   const dateLabel = events[0]?.dateLabel;
-  const cardPadding = getResponsiveValue(SPACING.lg, SPACING.xl, SPACING.xl);
-  const cardRadius = getResponsiveValue(24, 28, 32);
-  const entryGap = getResponsiveValue(SPACING.lg, SPACING.xl, SPACING.xl);
+  const desktopViewport = isDesktop();
+  const baseCardPadding = getResponsiveValue(SPACING.sm, SPACING.md, SPACING.lg);
+  const cardPadding = compact ? SPACING.md : baseCardPadding;
+  const baseCardRadius = getResponsiveValue(18, 22, 24);
+  const cardRadius = compact ? 16 : baseCardRadius;
+  const baseEntryGap = getResponsiveValue(SPACING.sm, SPACING.md, SPACING.md);
+  const entryGap = compact ? SPACING.sm : baseEntryGap;
+  const dividerPadding = compact ? SPACING.xs : getResponsiveValue(SPACING.sm, SPACING.md, SPACING.md);
+  const cardMaxWidth = desktopViewport ? Math.min(width * 0.55, 520) : Math.max(width - 40, 320);
+  const dateFontSize = 16;
+  const dateMarginBottom = compact ? SPACING.sm : SPACING.md;
+  const badgeHorizontalPadding = compact ? SPACING.sm : SPACING.md * 0.7;
+  const badgeVerticalPadding = compact ? 2 : 4;
+  const titleFontSize = compact ? 16 : 18;
+  const subtitleFontSize = 13.5;
+  const infoBlockMarginTop = compact ? SPACING.sm : SPACING.sm;
+  const detailRowGap = compact ? SPACING.xs : SPACING.sm;
+  const noteFontSize = compact ? 12 : 12.5;
+  const countdownMarginTop = compact ? SPACING.sm : SPACING.sm;
 
   return (
     <MotiView
@@ -496,11 +536,13 @@ const TodaySection = ({ events, onLocationPress }) => {
       <View
         style={{
           width: '100%',
+          maxWidth: cardMaxWidth,
+          alignSelf: 'center',
           backgroundColor: 'rgba(255,255,255,0.95)',
           borderRadius: cardRadius,
           padding: cardPadding,
           borderWidth: 1,
-          borderColor: 'rgba(212,175,55,0.45)',
+          borderColor: 'rgba(212,175,55,0.4)',
           ...SHADOWS.large,
         }}
       >
@@ -517,10 +559,10 @@ const TodaySection = ({ events, onLocationPress }) => {
         </Text>
         <Text
           style={{
-            fontSize: 20,
+            fontSize: dateFontSize,
             fontWeight: '700',
             color: CARD_TEXT_PRIMARY,
-            marginBottom: SPACING.lg,
+            marginBottom: dateMarginBottom,
           }}
         >
           {dateLabel}
@@ -534,7 +576,7 @@ const TodaySection = ({ events, onLocationPress }) => {
               key={event.id}
               style={{
                 marginTop: index === 0 ? 0 : entryGap,
-                paddingTop: index === 0 ? 0 : SPACING.md,
+                paddingTop: index === 0 ? 0 : dividerPadding,
                 borderTopWidth: index === 0 ? 0 : StyleSheet.hairlineWidth,
                 borderTopColor: 'rgba(0,0,0,0.08)',
                 position: 'relative',
@@ -562,16 +604,16 @@ const TodaySection = ({ events, onLocationPress }) => {
               <View
                 style={{
                   alignSelf: 'flex-start',
-                  paddingHorizontal: SPACING.md,
-                  paddingVertical: 4,
+                  paddingHorizontal: badgeHorizontalPadding,
+                  paddingVertical: badgeVerticalPadding,
                   borderRadius: 999,
                   backgroundColor: event.badgeColors.bg,
-                  marginBottom: SPACING.sm,
+                  marginBottom: compact ? SPACING.xs : SPACING.sm,
                 }}
               >
                 <Text
                   style={{
-                    fontSize: 12,
+                    fontSize: compact ? 11 : 11.5,
                     fontWeight: '700',
                     color: event.badgeColors.text,
                     letterSpacing: 1,
@@ -582,7 +624,7 @@ const TodaySection = ({ events, onLocationPress }) => {
               </View>
               <Text
                 style={{
-                  fontSize: 20,
+                  fontSize: titleFontSize,
                   fontWeight: '700',
                   color: CARD_TEXT_PRIMARY,
                 }}
@@ -592,7 +634,7 @@ const TodaySection = ({ events, onLocationPress }) => {
               {event.subtitle ? (
                 <Text
                   style={{
-                    fontSize: 15,
+                    fontSize: subtitleFontSize,
                     color: CARD_TEXT_SECONDARY,
                     marginTop: 2,
                   }}
@@ -600,8 +642,23 @@ const TodaySection = ({ events, onLocationPress }) => {
                   {event.subtitle}
                 </Text>
               ) : null}
-              <View style={{ marginTop: SPACING.md }}>
-                <TodayDetailRow icon="schedule" label="Time" value={event.time} />
+              <View
+                style={{
+                  marginTop: infoBlockMarginTop,
+                  flexDirection: desktopViewport ? 'row' : 'column',
+                }}
+              >
+                <TodayDetailRow
+                  icon="schedule"
+                  label="Time"
+                  value={event.time}
+                  compact={compact}
+                  style={{
+                    flex: 1,
+                    marginBottom: desktopViewport ? 0 : detailRowGap,
+                    marginRight: desktopViewport ? detailRowGap : 0,
+                  }}
+                />
                 <TodayDetailRow
                   icon="place"
                   label="Location"
@@ -611,53 +668,76 @@ const TodaySection = ({ events, onLocationPress }) => {
                       ? () => onLocationPress(event.location)
                       : undefined
                   }
+                  compact={compact}
+                  style={{
+                    flex: 1,
+                    marginBottom: 0,
+                    marginTop: desktopViewport ? 0 : 0,
+                  }}
                 />
               </View>
               {event.note ? (
                 <Text
                   style={{
-                    marginTop: SPACING.sm,
+                    marginTop: compact ? SPACING.xs : SPACING.sm,
                     color: CARD_TEXT_SECONDARY,
-                    lineHeight: 22,
+                    fontSize: noteFontSize,
+                    lineHeight: noteFontSize + 5,
                   }}
                 >
                   {event.note}
                 </Text>
               ) : null}
 
-              {event.arrivalDateTime ? (
-                <CountdownTimer
-                  targetDate={event.arrivalDateTime}
-                  title="ARRIVAL COUNTDOWN"
-                  note={
-                    arrivalLabel
-                      ? `Arrive by ${arrivalLabel}${
-                          kickoffLabel ? ` • Kickoff ${kickoffLabel}` : ''
-                        }`
-                      : ''
-                  }
-                  variant="arrival"
-                  highlightDate={event.startDateTime}
-                />
-              ) : (
+              {(event.arrivalDateTime || event.startDateTime) ? (
+                <View
+                  style={{
+                    flexDirection: desktopViewport ? 'row' : 'column',
+                    marginTop: countdownMarginTop,
+                  }}
+                >
+                  {event.arrivalDateTime ? (
+                    <CountdownTimer
+                      targetDate={event.arrivalDateTime}
+                      title="ARRIVAL"
+                      note={
+                        arrivalLabel
+                          ? `Arrive ${arrivalLabel}${kickoffLabel ? ` • KO ${kickoffLabel}` : ''}`
+                          : ''
+                      }
+                      variant="arrival"
+                      highlightDate={event.startDateTime}
+                      compact
+                      style={{
+                        marginRight: desktopViewport ? detailRowGap : 0,
+                        marginTop: 0,
+                      }}
+                    />
+                  ) : null}
+                  {event.startDateTime ? (
+                    <CountdownTimer
+                      targetDate={event.startDateTime}
+                      title="KICKOFF"
+                      note={kickoffLabel ? `Kickoff ${kickoffLabel}` : ''}
+                      variant="kickoff"
+                      compact
+                      style={{
+                        marginTop: desktopViewport || !event.arrivalDateTime ? 0 : detailRowGap,
+                      }}
+                    />
+                  ) : null}
+                </View>
+              ) : null}
+              {!event.arrivalDateTime ? (
                 <Text
                   style={{
-                    marginTop: SPACING.lg,
+                    marginTop: compact ? SPACING.md : SPACING.lg,
                     color: CARD_TEXT_SECONDARY,
-                    fontSize: 13,
+                    fontSize: compact ? 11.5 : 12,
                   }}
                 >
                   Players should arrive 1 hour before start time.
                 </Text>
-              )}
-
-              {event.startDateTime ? (
-                <CountdownTimer
-                  targetDate={event.startDateTime}
-                  title="KICKOFF COUNTDOWN"
-                  note={kickoffLabel ? `Kickoff ${kickoffLabel}` : ''}
-                  variant="kickoff"
-                />
               ) : null}
             </View>
           );
@@ -684,23 +764,37 @@ const openLocationInMaps = (location) => {
 
 export default function Hero() {
   const router = useRouter();
-  const heroHeight = getResponsiveValue(height * 0.8, height * 0.7, height * 0.9);
-  const mobileExtraHeight = isDesktop() ? 0 : height * 0.35;
-  const heroMinHeight = heroHeight + mobileExtraHeight;
-  const heroPaddingTop = getResponsiveValue(SPACING.xl, SPACING.xxl, SPACING.xxl);
-  const heroPaddingBottom = isDesktop() ? SPACING.xxl : SPACING.xxl * 1.5;
   const allMatches = useMemo(() => getAllMatches(), []);
   const todaySchedule = useMemo(
     () => buildTodaySchedule(allMatches, INDOOR_PRACTICE_SCHEDULE),
     [allMatches]
   );
+  const scheduleCount = todaySchedule?.length || 0;
+  const desktop = isDesktop();
+  const heroHeight = getResponsiveValue(height * 0.8, height * 0.7, height * 0.9);
+  const mobileExtraHeight = desktop ? 0 : height * 0.35;
+  const cardHeightEstimate = desktop
+    ? 0
+    : scheduleCount > 0
+      ? 240 + (scheduleCount - 1) * 160
+      : 160;
+  const heroMinHeight = heroHeight + mobileExtraHeight + cardHeightEstimate;
+  const heroPaddingTop = getResponsiveValue(SPACING.xl, SPACING.xxl, SPACING.xxl);
+  const heroPaddingBottom = desktop
+    ? SPACING.xxl
+    : SPACING.xxl + cardHeightEstimate * 0.35;
+  const horizontalPadding = getResponsiveValue(16, 24, 32);
+  const contentMaxWidth = desktop ? 900 : Math.max(width - 72, 320);
+  const titleWrapperMaxWidth = desktop ? 720 : '100%';
+  const subtitleMaxWidth = desktop ? 600 : '100%';
+  const useCompactCard = true;
 
   return (
       <View style={{
         minHeight: heroMinHeight,
         justifyContent: 'center',
         alignItems: 'center',
-        paddingHorizontal: getResponsiveValue(16, 24, 32),
+        paddingHorizontal: horizontalPadding,
         paddingTop: heroPaddingTop,
         paddingBottom: heroPaddingBottom,
         position: 'relative',
@@ -711,7 +805,7 @@ export default function Hero() {
 
         {/* Main Content */}
         <View style={{
-          maxWidth: isDesktop() ? 900 : width - 64,
+          maxWidth: contentMaxWidth,
           alignItems: 'center',
           zIndex: 10
         }}>
@@ -740,7 +834,7 @@ export default function Hero() {
                 borderRadius: 28,
                 paddingVertical: SPACING.md,
                 paddingHorizontal: getResponsiveValue(20, 28, 36),
-                maxWidth: isDesktop() ? 720 : '100%',
+                maxWidth: titleWrapperMaxWidth,
                 borderWidth: 1,
                 borderColor: 'rgba(255,255,255,0.25)',
                 ...SHADOWS.large,
@@ -772,12 +866,12 @@ export default function Hero() {
               />
               <MaterialIcons
                 name="sports-soccer"
-                size={isDesktop() ? 220 : 180}
+                size={desktop ? 220 : 180}
                 color="rgba(255,255,255,0.12)"
                 style={{
                   position: 'absolute',
-                  top: isDesktop() ? -40 : -50,
-                  right: isDesktop() ? -30 : -60,
+                  top: desktop ? -40 : -50,
+                  right: desktop ? -30 : -60,
                   transform: [{ rotate: '-15deg' }],
                 }}
               />
@@ -823,12 +917,16 @@ export default function Hero() {
                 textAlign: 'center',
                 fontWeight: '500',
                 marginBottom: SPACING.lg,
-                maxWidth: isDesktop() ? 600 : '100%',
+                maxWidth: subtitleMaxWidth,
               }}
             >
               {HERO_CONTENT.subheadline}
             </Text>
-            <TodaySection events={todaySchedule} onLocationPress={openLocationInMaps} />
+            <TodaySection
+              events={todaySchedule}
+              onLocationPress={openLocationInMaps}
+              compact={useCompactCard}
+            />
           </MotiView>
         </View>
       </View>
