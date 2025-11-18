@@ -120,23 +120,23 @@ const FloatingTriangle = ({ size, duration, delay, color, startX, startY }) => {
 
 // Soccer Field Background Component
 const SoccerFieldBackground = () => {
-  const lineColor = 'rgba(255,255,255,0.6)'; // brighter so web overlay stays visible
-  const lineWidth = 4;
+  const lineColor = 'rgba(255,255,255,0.35)'; // softened contrast so the lines are more see-through
+  const lineWidth = 5;
   
   return (
     <View style={styles.fieldContainer} pointerEvents="none">
       {/* Base Grass Gradient - dark base rising to lighter greens up top */}
       <LinearGradient
         colors={[
-          '#0f381f', // Deepest green at bottom
+          '#0b2a17', // Deepest at bottom
+          '#0f3a20',
           '#14532d',
-          '#1f6b26',
-          '#2d7a34',
-          '#3f9142',
-          '#5cb85c',
-          '#7cca86',
-          '#a3deb0',
-          '#d7f4dd', // Lightest green at top
+          '#1c5b38',
+          '#267a45',
+          '#2f9a55',
+          '#39b564',
+          '#6cd38a',
+          '#b9f2c9', // Lightest at top
         ]}
         locations={[0, 0.12, 0.24, 0.36, 0.48, 0.6, 0.72, 0.84, 1]}
         start={{ x: 0, y: 1 }}
@@ -268,17 +268,17 @@ export default function CarouselApp() {
   }));
 
   return (
-    <View style={{ flex: 1 }}>
-      {/* Soccer Field Background */}
-      <SoccerFieldBackground />
-      
-      {/* Hawks Logo Background Cover with Opacity */}
-      <View style={styles.logoBackground} pointerEvents="none">
-        <Image
-          source={require('../assets/images/logo/hawks.png')}
-          style={styles.logoImage}
-          resizeMode="contain"
-        />
+    <View style={{ flex: 1, backgroundColor: 'transparent' }}>
+      {/* Background stack: logo as base, field lines on top */}
+      <View style={styles.backgroundLayer} pointerEvents="none">
+        <View style={styles.logoBackground}>
+          <Image
+            source={require('../assets/images/logo/hawks.png')}
+            style={styles.logoImage}
+            resizeMode="contain"
+          />
+        </View>
+        <SoccerFieldBackground />
       </View>
 
       {/* Animated Page Content */}
@@ -304,13 +304,21 @@ export default function CarouselApp() {
 
 const styles = StyleSheet.create({
   // Soccer Field Styles
+  backgroundLayer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 0,
+  },
   fieldContainer: {
     position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    zIndex: -1,
+    zIndex: 0,
   },
   grassGradient: {
     position: 'absolute',
@@ -434,7 +442,7 @@ const styles = StyleSheet.create({
     height: SCREEN_WIDTH * 0.35,
     marginLeft: -(SCREEN_WIDTH * 0.35 / 2),
     marginTop: -(SCREEN_WIDTH * 0.35 / 2),
-    opacity: 0.22,
+    opacity: 0.24,
     transform: [{ rotate: '0deg' }],
     zIndex: 1,
   },
@@ -447,6 +455,7 @@ const styles = StyleSheet.create({
   pagesContainer: {
     flexDirection: 'row',
     flex: 1,
+    zIndex: 2,
   },
   pageWrapper: {
     width: SCREEN_WIDTH,

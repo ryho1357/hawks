@@ -792,11 +792,16 @@ export default function Hero() {
   return (
     <View style={{ flex: 1 }}>
       <LinearGradient
-        colors={['#072f12', '#0c5c1f', '#0a4418']}
+        colors={[
+          'rgba(7,47,18,0.55)',
+          'rgba(12,92,31,0.55)',
+          'rgba(12,92,31,0.45)',
+          'rgba(255,255,255,0.15)',
+        ]}
         start={{ x: 0, y: 0 }}
         end={{ x: 0, y: 1 }}
         style={StyleSheet.absoluteFillObject}
-      />
+      />  
       <ScrollView
         style={{ flex: 1 }}
         bounces

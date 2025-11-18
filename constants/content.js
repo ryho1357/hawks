@@ -1,9 +1,8 @@
 // constants/content.js
 import { GAME_HISTORY, getAggregateTotals, getSeasonSummary } from './gameHistory';
 
-// Only count in-season league play (Spring + Fall 2025)
-const STATS_SEASON_IDS = ['spring-2025-lijsl', 'fall-2025-lijsl'];
-const LEAGUE_TOTALS = getAggregateTotals({ includeCups: false, seasonIds: STATS_SEASON_IDS });
+// Count all league seasons on record (no cups)
+const LEAGUE_TOTALS = getAggregateTotals({ includeCups: false });
 const CURRENT_SEASON_ID = GAME_HISTORY.find((season) => !season.isCup)?.id || GAME_HISTORY[0]?.id;
 const CURRENT_SEASON = getSeasonSummary(CURRENT_SEASON_ID);
 
@@ -91,7 +90,7 @@ export const TEAM_HISTORY = {
     draws: CURRENT_SEASON?.record?.draws ?? DEFAULT_RECORD.draws,
     losses: CURRENT_SEASON?.record?.losses ?? DEFAULT_RECORD.losses,
   },
-  highlight: "2nd in Division 4E — promotion on the way (7 → 6 → 4 → ?). 📈🔥",
+  highlight: "2nd in Division 4E — promotion on the way (7 → 6 → 4 → ?). 📈🔥 Note: This group has played over 50 games together in total.",
 };
 
 // Coaching Philosophy
