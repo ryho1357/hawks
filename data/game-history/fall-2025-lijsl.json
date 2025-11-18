@@ -15,9 +15,9 @@
       "isHome": false,
       "opponentClub": "MANORVILLE (LIJSL)",
       "opponent": "Arsenal",
-      "score": null,
-      "result": null,
-      "notes": "Upcoming league match vs Manorville Arsenal"
+      "score": { "hawks": 3, "opponent": 1 },
+      "result": "W",
+      "notes": "Clinical away win to close the season and clinch promotion."
     },
     {
       "date": "2025-11-01",

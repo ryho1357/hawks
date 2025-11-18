@@ -1,7 +1,9 @@
 // constants/content.js
 import { GAME_HISTORY, getAggregateTotals, getSeasonSummary } from './gameHistory';
 
-const LEAGUE_TOTALS = getAggregateTotals({ includeCups: false });
+// Only count in-season league play (Spring + Fall 2025)
+const STATS_SEASON_IDS = ['spring-2025-lijsl', 'fall-2025-lijsl'];
+const LEAGUE_TOTALS = getAggregateTotals({ includeCups: false, seasonIds: STATS_SEASON_IDS });
 const CURRENT_SEASON_ID = GAME_HISTORY.find((season) => !season.isCup)?.id || GAME_HISTORY[0]?.id;
 const CURRENT_SEASON = getSeasonSummary(CURRENT_SEASON_ID);
 
@@ -89,7 +91,7 @@ export const TEAM_HISTORY = {
     draws: CURRENT_SEASON?.record?.draws ?? DEFAULT_RECORD.draws,
     losses: CURRENT_SEASON?.record?.losses ?? DEFAULT_RECORD.losses,
   },
-  highlight: "Promoted from Division 7 → 6 → 4 in under two years. 📈",
+  highlight: "2nd in Division 4E — promotion on the way (7 → 6 → 4 → ?). 📈🔥",
 };
 
 // Coaching Philosophy

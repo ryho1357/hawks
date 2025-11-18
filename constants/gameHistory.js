@@ -77,8 +77,12 @@ export const getAllMatches = (options = {}) =>
   );
 
 export const getAggregateTotals = (options = {}) => {
+  const { seasonIds } = options;
   const games = getAllMatches(options);
-  const completedGames = games.filter(isCompletedGame);
+  const filteredGames = seasonIds?.length
+    ? games.filter((game) => seasonIds.includes(game.seasonId))
+    : games;
+  const completedGames = filteredGames.filter(isCompletedGame);
   const record = computeRecord(completedGames);
   const cleanSheets = completedGames.filter((game) => Number(game?.score?.opponent) === 0).length;
 

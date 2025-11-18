@@ -120,25 +120,27 @@ const FloatingTriangle = ({ size, duration, delay, color, startX, startY }) => {
 
 // Soccer Field Background Component
 const SoccerFieldBackground = () => {
-  const lineColor = 'rgba(255,255,255,0.15)';
-  const lineWidth = 2;
+  const lineColor = 'rgba(255,255,255,0.6)'; // brighter so web overlay stays visible
+  const lineWidth = 4;
   
   return (
-    <View style={styles.fieldContainer}>
-      {/* Base Grass Gradient - Smooth white to green transition */}
+    <View style={styles.fieldContainer} pointerEvents="none">
+      {/* Base Grass Gradient - dark base rising to lighter greens up top */}
       <LinearGradient
         colors={[
-          '#e8f5e9',  // Very light green (almost white) at top
-          '#c8e6c9',  // Light green
-          '#a5d6a7',  // Medium-light green
-          '#81c784',  // Medium green
-          '#66bb6a',  // Medium-bright green
-          '#4caf50',  // Bright green
-          '#2d7a34',  // Dark green
-          '#1f6b26',  // Darker green
-          '#1a5f1f',  // Darkest green at bottom
+          '#0f381f', // Deepest green at bottom
+          '#14532d',
+          '#1f6b26',
+          '#2d7a34',
+          '#3f9142',
+          '#5cb85c',
+          '#7cca86',
+          '#a3deb0',
+          '#d7f4dd', // Lightest green at top
         ]}
-        locations={[0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1]}
+        locations={[0, 0.12, 0.24, 0.36, 0.48, 0.6, 0.72, 0.84, 1]}
+        start={{ x: 0, y: 1 }}
+        end={{ x: 0, y: 0 }}
         style={styles.grassGradient}
       />
       
@@ -271,7 +273,7 @@ export default function CarouselApp() {
       <SoccerFieldBackground />
       
       {/* Hawks Logo Background Cover with Opacity */}
-      <View style={styles.logoBackground}>
+      <View style={styles.logoBackground} pointerEvents="none">
         <Image
           source={require('../assets/images/logo/hawks.png')}
           style={styles.logoImage}
@@ -308,7 +310,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    zIndex: -2,
+    zIndex: -1,
   },
   grassGradient: {
     position: 'absolute',
@@ -432,9 +434,9 @@ const styles = StyleSheet.create({
     height: SCREEN_WIDTH * 0.35,
     marginLeft: -(SCREEN_WIDTH * 0.35 / 2),
     marginTop: -(SCREEN_WIDTH * 0.35 / 2),
-    opacity: 0.08,
+    opacity: 0.22,
     transform: [{ rotate: '0deg' }],
-    zIndex: -1,
+    zIndex: 1,
   },
   logoImage: {
     width: '100%',

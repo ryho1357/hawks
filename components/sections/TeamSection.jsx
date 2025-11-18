@@ -108,6 +108,7 @@ const stats = [
 ];
 
 const SEASON_PLACEMENTS = {
+  'fall-2025-lijsl': 2,
   'spring-2025-lijsl': 1,
   'fall-2024-lijsl': 3,
 };
